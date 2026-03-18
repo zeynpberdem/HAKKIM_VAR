@@ -1,0 +1,1 @@
+# HAKKIM_VAR
