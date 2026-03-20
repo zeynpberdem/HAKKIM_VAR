@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hakkım Var</title>
+<link rel="stylesheet" href="./styles.css" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #060813; color: white; height: 100vh; overflow: hidden; }
+canvas#bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.page { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(109,40,217,0.15) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(8,145,178,0.12) 0%, transparent 45%); }
+nav { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(6,8,19,0.92); backdrop-filter: blur(12px); flex-shrink: 0; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-text { font-size: 22px; font-weight: 700; color: white; }
+.logo-text span { color: #a78bfa; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-link { color: rgba(255,255,255,0.55); font-size: 14px; cursor: pointer; }
+.nav-cta { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; padding: 0.55rem 1.3rem; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+.main { flex: 1; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2rem; padding: 2rem 2.5rem; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(109,40,217,0.18); border: 1px solid rgba(109,40,217,0.35); color: #c4b5fd; padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 11px; font-weight: 500; margin-bottom: 1rem; }
+.bdot { width: 5px; height: 5px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+h1 { font-size: 40px; font-weight: 800; line-height: 1.1; margin-bottom: 0.9rem; color: white; animation: fadeUp 0.6s 0.1s ease both; }
+h1 .grad { background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.65; margin-bottom: 1.3rem; max-width: 420px; }
+.cta-row { display: flex; gap: 10px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.btn-main { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; padding: 0.7rem 1.7rem; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 22px rgba(124,58,237,0.35); }
+.btn-note { font-size: 11px; color: rgba(255,255,255,0.35); }
+.stats { display: flex; gap: 2rem; margin-bottom: 1.4rem; }
+.snum { font-size: 22px; font-weight: 700; color: #a78bfa; }
+.slbl { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+.steps-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; }
+.step { background: rgba(109,40,217,0.05); border: 1px solid rgba(109,40,217,0.18); border-radius: 10px; padding: 0.7rem 0.8rem; }
+.step-n { width: 18px; height: 18px; border-radius: 50%; background: rgba(109,40,217,0.25); border: 1px solid rgba(109,40,217,0.4); color: #a78bfa; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; margin-bottom: 0.5rem; }
+.step h3 { font-size: 12px; font-weight: 600; margin-bottom: 0.2rem; }
+.step p { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+.preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(109,40,217,0.2); border-radius: 14px; padding: 1.2rem; box-shadow: 0 0 40px rgba(109,40,217,0.1); }
+.prev-top { display: flex; align-items: center; gap: 5px; padding-bottom: 0.8rem; margin-bottom: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.ptxt { font-size: 11px; color: rgba(255,255,255,0.3); margin-left: 4px; }
+.info-r { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+.info-r:last-of-type { border-bottom: none; }
+.ik { color: rgba(255,255,255,0.4); }
+.iv { color: white; font-weight: 600; }
+.chips { display: flex; gap: 5px; flex-wrap: wrap; margin: 0.7rem 0; }
+.chip { padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 11px; font-weight: 500; background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.35); color: #c4b5fd; }
+.dilekce { background: rgba(109,40,217,0.06); border: 1px solid rgba(109,40,217,0.15); border-radius: 7px; padding: 0.8rem 0.9rem; margin-top: 0.5rem; font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.65; font-style: italic; }
+.copy-r { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
+.copy-r span { font-size: 10px; color: rgba(255,255,255,0.25); }
+.copy-r button { background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.35); color: #a78bfa; padding: 0.28rem 0.8rem; border-radius: 6px; font-size: 11px; cursor: pointer; }
+.quick-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid rgba(109,40,217,0.12); }
+.qt { background: rgba(109,40,217,0.09); border: 1px solid rgba(109,40,217,0.18); color: #c4b5fd; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+.qt:hover { background: rgba(109,40,217,0.25); }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="page" id="landingPage">
+  <nav>
+    <div class="logo">
+      <svg width="44" height="44" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="9" fill="url(#lg)"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="36" y2="36"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs>
+        <rect x="9" y="8" width="18" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <rect x="9" y="13" width="18" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <rect x="9" y="18" width="12" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <circle cx="24" cy="26" r="5" fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
+        <path d="M22 26l1.5 1.5L26.5 24" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">Hakkım <span>Var</span></span>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link" id="goLanding">Ana Sayfa</span>
+      <span class="nav-link" id="howItWorksBtn">Nasıl Çalışır?</span>
+      <button class="nav-cta" id="goForm">Başvuru Yap</button>
+    </div>
+  </nav>
+  <div class="main">
+    <div>
+      <div class="badge"><span class="bdot"></span> AI Destekli Vatandaş Platformu</div>
+      <h1>Hakkını ara,<br><span class="grad">doğru yere ilet</span></h1>
+      <p class="desc">Altyapı ve belediye hizmet sorunlarını doğru kuruma, doğru üslupla iletmen için AI destekli dilekçe ve başvuru kanalı rehberi.</p>
+      <div class="cta-row">
+        <button class="btn-main" id="startApplication">Başvuru Yap →</button>
+        <span class="btn-note">Üyelik yok. Dilekçeyi kopyalayıp ilgili kanala ilet.</span>
+      </div>
+      <div class="stats">
+        <div><div class="snum" id="appCount" data-target="12847">0</div><div class="slbl">vatandaş başvuru yaptı</div></div>
+        <div><div class="snum">5</div><div class="slbl">şehir destekleniyor</div></div>
+        <div><div class="snum">%94</div><div class="slbl">memnuniyet oranı</div></div>
+      </div>
+      <div class="steps-row" id="howItWorks">
+        <div class="step"><div class="step-n">1</div><h3>Sorununu Seç</h3><p>İl/ilçe ve kategori seçerek doğru kanalı bul.</p></div>
+        <div class="step"><div class="step-n">2</div><h3>Cümlelerinle Yaz</h3><p>Sorununu anlat; AI resmi dile çevirsin.</p></div>
+        <div class="step"><div class="step-n">3</div><h3>Kopyala & Gönder</h3><p>Kanalları ve dilekçeyi tek tıkla kopyala.</p></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; justify-content: center;">
+      <div class="preview">
+        <div class="prev-top">
+          <div class="dot" style="background:#7c3aed"></div>
+          <div class="dot" style="background:#a78bfa"></div>
+          <div class="dot" style="background:#c4b5fd"></div>
+          <span class="ptxt">Örnek çıktı</span>
+        </div>
+        <div class="info-r"><span class="ik">İl / İlçe</span><span class="iv">Elazığ / Karakoçan</span></div>
+        <div class="info-r"><span class="ik">Sorun</span><span class="iv">Sokak Aydınlatması</span></div>
+        <div class="info-r"><span class="ik">İletişim Kanalları</span><span class="iv"></span></div>
+        <div class="chips">
+          <span class="chip">ALO 153</span>
+          <span class="chip">TEDAŞ 186</span>
+          <span class="chip">CİMER 150</span>
+        </div>
+        <div class="dilekce">Sayın Yetkili,<br><br>Elazığ ili Karakoçan ilçesinde ikamet etmekteyim. Sokağımızdaki aydınlatma yaklaşık 1 haftadır çalışmamaktadır.<br><br>Yaşanan durum vatandaşların güvenliğini olumsuz etkilemektedir. Gereğini saygılarımla arz ederim.</div>
+        <div class="copy-r"><span>PDF İndir</span><button>Kopyala</button></div>
+      </div>
+      <div class="quick-row">
+        <span class="qt quickBtn" data-category="Sokak Aydınlatması">Sokak Lambası</span>
+        <span class="qt quickBtn" data-category="Su Kesintisi">Su Kesintisi</span>
+        <span class="qt quickBtn" data-category="Yol/Kaldırım">Bozuk Yol</span>
+        <span class="qt quickBtn" data-category="Çöp/Atık">Çöp Sorunu</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script type="module" src="./main.js"></script>
+
+<script>
+const c=document.getElementById('bg'),x=c.getContext('2d');
+let P=[],W,H;
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight;}
+rs();window.addEventListener('resize',rs);
+for(let i=0;i<50;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.8+0.5,dx:Math.random()*0.3-0.15,dy:Math.random()*0.2-0.15,o:Math.random()*0.4+0.1,p:Math.random()*Math.PI*2});
+function draw(){
+  x.clearRect(0,0,W,H);
+  P.forEach(p=>{p.p+=0.01;const op=p.o*(0.7+0.3*Math.sin(p.p));x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(167,139,250,${op})`;x.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;});
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(124,58,237,${0.1*(1-d/110)})`;x.lineWidth=0.5;x.stroke();}}
+  requestAnimationFrame(draw);
+}
+draw();
+
+document.getElementById('howItWorksBtn')?.addEventListener('click', () => {
+    const steps = document.getElementById('howItWorks');
+    if (steps) {
+        steps.style.transform = 'scale(1.02)';
+        steps.style.boxShadow = '0 0 20px rgba(124,58,237,0.3)';
+        steps.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+            steps.style.transform = 'none';
+            steps.style.boxShadow = 'none';
+        }, 600);
+    }
+});
+</script>
+</body>
+</html>

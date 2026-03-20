@@ -1,0 +1,33 @@
+{
+  "districtsByCity": {
+    "ELAZIĞ": ["MERKEZ", "AĞIN", "ALACAKAYA", "ARICAK", "BASKİL", "KARAKOÇAN", "KEBAN", "KOVANCILLAR", "MADEN", "PALU", "SİVRİCE"],
+    "MALATYA": ["MERKEZ", "AKÇADAĞ", "ARAPGİR", "DARENDE", "DOĞANŞEHIR", "HEKİMHAN", "KALE", "KULUNCAK", "PÜTÜRGE", "YAZIHAN", "YEŞİLYURT"],
+    "DİYARBAKIR": ["BAĞLAR", "BİSMİL", "ÇERMİK", "ÇINAR", "ERGANİ", "KAYAPINAR", "SİLVAN", "SUR", "YENİŞEHİR"],
+    "ERZİNCAN": ["MERKEZ", "ÇAYIRLI", "İLİÇ", "KEMAH", "KEMALİYE", "REFAHİYE", "TERCAN", "ÜZÜMLÜ"],
+    "TUNCELİ": ["MERKEZ", "ÇEMİŞGEZEK", "HOZAT", "MAZGİRT", "NAZIMİYE", "OVACIK", "PERTEK", "PÜLÜMÜR"]
+  },
+  "overridesByCity": {
+    "ELAZIĞ": {
+      "MERKEZ": {"phone": "0424 218 10 10", "whatsapp": null, "email": "info@elazig.bel.tr", "website": "https://www.elazig.bel.tr", "mayor": null}
+    },
+    "MALATYA": {
+      "MERKEZ": {"phone": "0422 321 10 10", "whatsapp": null, "email": "info@battalgazi.bel.tr", "website": "https://www.battalgazi.bel.tr", "mayor": null}
+    },
+    "DİYARBAKIR": {
+      "BAĞLAR": {"phone": "0412 251 10 10", "whatsapp": null, "email": "info@baglar.bel.tr", "website": "https://www.baglar.bel.tr", "mayor": null}
+    },
+    "ERZİNCAN": {
+      "MERKEZ": {"phone": "0446 214 10 10", "whatsapp": null, "email": "info@erzincan.bel.tr", "website": "https://www.erzincan.bel.tr", "mayor": null}
+    },
+    "TUNCELİ": {
+      "MERKEZ": {"phone": "0428 213 10 10", "whatsapp": null, "email": "info@tunceli.bel.tr", "website": "https://www.tunceli.bel.tr", "mayor": null}
+    }
+  },
+  "contactSchema": {
+    "phone": "ALO 153",
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "mayor": null
+  }
+}

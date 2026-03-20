@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Başvuru Yap — Hakkım Var</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #060813; color: white; min-height: 100vh; }
+canvas#bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(109,40,217,0.15) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(8,145,178,0.08) 0%, transparent 45%); }
+nav { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(6,8,19,0.92); backdrop-filter: blur(12px); flex-shrink: 0; }
+.logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo-text { font-size: 22px; font-weight: 700; color: white; }
+.logo-text span { color: #a78bfa; }
+.back-btn { font-size: 13px; color: rgba(255,255,255,0.45); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.back-btn:hover { color: #a78bfa; }
+
+.main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 1.5rem 2.5rem; }
+
+.form-card { width: 100%; max-width: 860px; background: rgba(255,255,255,0.03); border: 1px solid rgba(109,40,217,0.2); border-radius: 16px; padding: 2rem 2.5rem; }
+
+.form-header { margin-bottom: 1.5rem; }
+.form-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 0.3rem; }
+.form-header p { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+.row3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
+.row2 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
+.row1 { margin-bottom: 1rem; }
+
+.field label { display: block; font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem; letter-spacing: 0.5px; text-transform: uppercase; }
+.field select, .field input, .field textarea {
+  width: 100%; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(109,40,217,0.2); border-radius: 8px;
+  color: white; font-size: 13px; padding: 0.65rem 0.9rem;
+  outline: none; font-family: inherit;
+  transition: border-color 0.2s;
+  appearance: none; -webkit-appearance: none;
+}
+.field select:focus, .field input:focus, .field textarea:focus { border-color: rgba(109,40,217,0.6); }
+.field select option { background: #0f0f1f; color: white; }
+.field textarea { resize: none; height: 80px; line-height: 1.5; }
+.field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+.char-count { font-size: 10px; color: rgba(255,255,255,0.25); text-align: right; margin-top: 0.3rem; }
+
+.submit-wrap { margin-top: 1.5rem; display: flex; justify-content: center; }
+.btn-submit {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: white; border: none; padding: 0.85rem 3rem;
+  border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 0 28px rgba(124,58,237,0.4);
+  transition: transform 0.15s, box-shadow 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 40px rgba(124,58,237,0.6); }
+.btn-note { text-align: center; font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 0.6rem; }
+
+.select-wrap { position: relative; }
+.select-wrap::after { content: '▾'; position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); pointer-events: none; font-size: 12px; }
+</style>
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="page">
+  <nav>
+    <div class="logo">
+      <svg width="44" height="44" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="9" fill="url(#lg)"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="36" y2="36"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs>
+        <rect x="9" y="8" width="18" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <rect x="9" y="13" width="18" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <rect x="9" y="18" width="12" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <circle cx="24" cy="26" r="5" fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
+        <path d="M22 26l1.5 1.5L26.5 24" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">Hakkım <span>Var</span></span>
+    </div>
+    <div class="back-btn" onclick="history.back()">← Ana Sayfaya Dön</div>
+  </nav>
+
+  <div class="main" style="align-items: flex-start;">
+    <form id="complaintForm" class="form-card" autocomplete="off">
+      <div class="form-header">
+        <h2>Başvuru Yap</h2>
+        <p>Bilgileri doldur, AI ile başvuru kanalı ve dilekçeni hazırla.</p>
+      </div>
+
+      <div class="row3">
+        <div class="field">
+          <label>İl</label>
+          <div class="select-wrap">
+            <select id="citySelect" required><option value="" selected disabled>İl seçin</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>İlçe / Belediye</label>
+          <div class="select-wrap">
+            <select id="districtSelect" required disabled><option value="" selected disabled>Önce il seçin</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Sorun Kategorisi</label>
+          <div class="select-wrap">
+            <select id="categorySelect" required>
+              <option value="" selected disabled>Kategori seçin</option>
+              <option>Sokak Aydınlatması</option>
+              <option>Su Kesintisi</option>
+              <option>Bozuk Yol</option>
+              <option>Çöp Sorunu</option>
+              <option>Elektrik Kesintisi</option>
+              <option>Park Sorunu</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row1 field">
+        <label>Sorununuzu kendi cümlelerinizle yazın</label>
+        <div class="textareaRow">
+          <textarea id="sorun-textarea" placeholder="Örn: Bizim sokağın lambası 1 haftadır yanmıyor, gece çocuklar korkuyor." oninput="updateCount()" required></textarea>
+          <button class="micBtn" id="mikrofon-btn" type="button" aria-label="Sesle yazdır">
+            <span class="micDot" aria-hidden="true"></span>
+            <span class="micIcon" aria-hidden="true">🎙</span>
+          </button>
+        </div>
+        <div class="char-count"><span id="charHint">0</span> <span id="cc" style="display:none"></span></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Ad Soyad</label>
+          <input id="fullName" type="text" placeholder="Örn: Zeynep Yılmaz" required>
+        </div>
+        <div class="field">
+          <label>T.C. Kimlik No</label>
+          <input id="tcKimlik" type="text" placeholder="11 haneli" maxlength="11" required>
+        </div>
+        <div class="field">
+          <label>Telefon</label>
+          <input id="phone" type="text" placeholder="05xx xxx xx xx" required>
+        </div>
+      </div>
+
+      <div class="row1 field">
+        <label>Adres</label>
+        <textarea id="address" rows="2" placeholder="Mahalle, sokak, no, il/ilçe" style="height:50px" required></textarea>
+      </div>
+
+      <div class="submit-wrap" style="justify-content:space-between; align-items:center;">
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+        <button id="generateBtn" type="submit" class="btn-submit">AI Destekli Çözüm Üret →</button>
+      </div>
+      <p class="btn-note">Üyelik yok. Dilekçeyi kopyalayıp ilgili kanala ilet.</p>
+
+      <section id="municipalityInfo" class="infoCard hidden" aria-live="polite" style="margin-top:2rem">
+        <div class="infoHeader">
+          <div>
+            <div class="infoTitle">Seçilen belediye bilgileri</div>
+            <div class="infoSubtitle" id="infoName">—</div>
+          </div>
+          <div class="infoActions">
+            <a class="ghost hidden" id="whatsBtn" target="_blank" rel="noreferrer">WhatsApp ile Gönder</a>
+            <a class="ghost hidden" id="emailBtn">E‑posta Gönder</a>
+          </div>
+        </div>
+        <div class="infoGrid">
+          <div class="infoItem"><span class="infoKey">Telefon</span><span class="infoVal" id="infoPhone">null</span></div>
+          <div class="infoItem"><span class="infoKey">WhatsApp</span><span class="infoVal" id="infoWhatsapp">null</span></div>
+          <div class="infoItem"><span class="infoKey">E‑posta</span><span class="infoVal" id="infoEmail">null</span></div>
+          <div class="infoItem"><span class="infoKey">Web sitesi</span><span class="infoVal" id="infoWebsite">null</span></div>
+          <div class="infoItem"><span class="infoKey">Belediye başkanı</span><span class="infoVal" id="infoMayor">null</span></div>
+        </div>
+      </section>
+
+      <section id="result" class="result hidden" aria-live="polite">
+        <div class="resultGrid">
+          <div class="resultCard">
+            <div class="resultHeader">
+              <h2 class="subH2">İletişim Kanalları</h2>
+              <button class="ghost" id="copyChannels" type="button">Kopyala</button>
+            </div>
+            <ul id="channelsList" class="channelsList"></ul>
+          </div>
+          <div class="resultCard">
+            <div class="resultHeader">
+              <h2 class="subH2">Dilekçe Metni</h2>
+              <div class="resultBtns">
+                <button class="ghost" id="copyPetition" type="button">Kopyala</button>
+                <button class="ghost hidden" id="pdfBtn" type="button">PDF İndir</button>
+              </div>
+            </div>
+            <pre id="petitionText" class="petitionBox"></pre>
+          </div>
+        </div>
+      </section>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script type="module" src="./main.js"></script>
+<script>
+function updateCount() {
+  const t = document.getElementById('sorun-textarea');
+  if(t) document.getElementById('cc').textContent = t.value.length;
+}
+const c=document.getElementById('bg'),x=c.getContext('2d');
+let P=[],W,H;
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight;}
+rs();window.addEventListener('resize',rs);
+for(let i=0;i<50;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.8+0.5,dx:Math.random()*0.3-0.15,dy:Math.random()*0.2-0.15,o:Math.random()*0.4+0.1,p:Math.random()*Math.PI*2});
+function draw(){
+  x.clearRect(0,0,W,H);
+  P.forEach(p=>{p.p+=0.01;const op=p.o*(0.7+0.3*Math.sin(p.p));x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(167,139,250,${op})`;x.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;});
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(124,58,237,${0.1*(1-d/110)})`;x.lineWidth=0.5;x.stroke();}}
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
