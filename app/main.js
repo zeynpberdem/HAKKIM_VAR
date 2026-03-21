@@ -180,41 +180,112 @@ async function buildPdf() {
   }
 
   setStatus("PDF hazırlanıyor...", "info");
-  
+
   try {
     const fontRes = await fetch("./roboto.ttf");
     if (!fontRes.ok) throw new Error("Font yüklenemedi.");
     const fontBuffer = await fontRes.arrayBuffer();
-
     let binary = '';
     const bytes = new Uint8Array(fontBuffer);
-    const chunk = 8192;
-    for (let i = 0; i < bytes.length; i += chunk) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    for (let i = 0; i < bytes.length; i += 8192) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
     }
     const base64Font = window.btoa(binary);
 
-    const rec = getSelectedMunicipalityRecord();
-    const municipalityName = rec?.municipality || "Belediye";
-    const city = rec?.city || "";
-    const district = rec?.district || "";
-
-    const dateStr = new Date().toLocaleDateString("tr-TR");
-    const full = fullName.value.trim() || "…";
-
     const doc = new JsPDF({ unit: "mm", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
-    const margin = 18;
-    let y = 18;
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const contentW = pageW - margin * 2;
+    let y = 20;
 
     doc.addFileToVFS("Roboto-Regular.ttf", base64Font);
     doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
     doc.setFont("Roboto", "normal");
-    doc.setFontSize(11);
 
+    // Sağ üst: Tarih + Sayı
+    const today = new Date().toLocaleDateString("tr-TR");
+    doc.setFontSize(10);
+    doc.text(`Tarih: ${today}`, margin, y);
+    doc.text("Sayı: ___________", pageW - margin, y, { align: "right" });
+    y += 14;
+
+    // Dilekçe metnini satır satır işle
     const body = petitionText.textContent?.trim() || "";
-    const lines = doc.splitTextToSize(body, pageW - margin * 2);
-    doc.text(lines, margin, y);
+    const lines = body.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      if (y > pageH - 30) {
+        doc.addPage();
+        y = 20;
+      }
+
+      // Boş satır
+      if (line === "") { y += 4; continue; }
+
+      // Tarih satırını atla (üstte ekledik)
+      if (line.startsWith("Tarih:")) continue;
+
+      // T.C. başlığı
+      if (line === "T.C.") {
+        doc.setFontSize(12);
+        doc.setFont("Roboto", "normal");
+        doc.text(line, margin, y);
+        y += 6; continue;
+      }
+
+      // Belediye adı
+      if (line.includes("Başkanlığı") || line.includes("Belediyesi")) {
+        doc.setFontSize(12);
+        doc.setFont("Roboto", "normal");
+        doc.text(line, margin, y);
+        y += 6; continue;
+      }
+
+      // Konu satırı
+      if (line.startsWith("Konu:")) {
+        doc.setFontSize(11);
+        doc.setFont("Roboto", "normal");
+        doc.text(line, margin, y);
+        y += 8; continue;
+      }
+
+      // Sayın Yetkili
+      if (line.startsWith("Sayın")) {
+        doc.setFontSize(11);
+        doc.text(line, margin, y);
+        y += 8; continue;
+      }
+
+      // İmza bloğu
+      if (
+        line.startsWith("Ad Soyad:") ||
+        line.startsWith("T.C. Kimlik") ||
+        line.startsWith("Adres:") ||
+        line.startsWith("Telefon:") ||
+        line.startsWith("Saygı")
+      ) {
+        doc.setFontSize(10);
+        doc.setFont("Roboto", "normal");
+        doc.text(line, margin, y);
+        y += 6; continue;
+      }
+
+      // Normal paragraf
+      doc.setFontSize(11);
+      doc.setFont("Roboto", "normal");
+      const wrapped = doc.splitTextToSize(line, contentW);
+      doc.text(wrapped, margin, y);
+      y += wrapped.length * 6 + 2;
+    }
+
+    // Alt imza çizgisi
+    y += 10;
+    if (y < pageH - 20) {
+      doc.text("İmza: _______________________________", margin, y);
+    }
 
     doc.save("dilekce.pdf");
     setStatus("PDF başarıyla indirildi.");
@@ -454,12 +525,54 @@ function renderResult(payload) {
   const channels = Array.isArray(payload?.channels) ? payload.channels : [];
   if (channels.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "Bu seçim için kayıtlı kanal bulunamadı.";
+    const div = document.createElement("div");
+    div.className = "channel-card";
+    div.textContent = "Bu seçim için kayıtlı kanal bulunamadı.";
+    li.appendChild(div);
     channelsList.appendChild(li);
   } else {
     for (const ch of channels) {
       const li = document.createElement("li");
-      li.textContent = ch;
+      let href = "";
+      let isWeb = false;
+
+      const webMatch = ch.match(/(https?:\/\/[^\s\)]+|www\.[^\s\)]+|[a-zA-Z0-9.-]+\.(gov\.tr|bel\.tr|com|net|org))/i);
+      const mailto_match = ch.match(/mailto:[^\s\)]+/i);
+      const phoneMatch = ch.match(/(?:tel:([^\s\)]+))|(\+?90\s?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}|\b1\d{2}\b/i);
+
+      if (mailto_match) {
+        href = mailto_match[0];
+        isWeb = false;
+      } else if (webMatch) {
+        href = webMatch[0];
+        if (!href.startsWith("http")) href = "http://" + href;
+        isWeb = true;
+      } else if (phoneMatch) {
+        if (phoneMatch[1]) {
+          href = "tel:" + phoneMatch[1].replace(/[^\d+]/g, "");
+        } else {
+          const digits = phoneMatch[0].replace(/[^\d+]/g, "");
+          href = "tel:" + digits;
+        }
+      }
+
+      if (href) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.className = "channel-card";
+        if (isWeb) {
+          a.target = "_blank";
+          a.rel = "noreferrer";
+        }
+        a.textContent = ch;
+        li.appendChild(a);
+      } else {
+        const div = document.createElement("div");
+        div.className = "channel-card";
+        div.textContent = ch;
+        li.appendChild(div);
+      }
+      
       channelsList.appendChild(li);
     }
   }
@@ -524,6 +637,8 @@ function updateMunicipalityInfo() {
     emailBtn.classList.add("hidden");
     emailBtn.removeAttribute("href");
   }
+
+  updateMap(rec.city, rec.municipality);
 }
 
 async function copyText(text) {
@@ -557,6 +672,7 @@ function validateInputs() {
   if (!name) return { ok: false, message: "Lütfen Ad Soyad alanını doldurun." };
   if (!/^\d{11}$/.test(tc)) return { ok: false, message: "T.C. Kimlik No 11 haneli olmalı." };
   if (!tel) return { ok: false, message: "Lütfen Telefon alanını doldurun." };
+  if (!/^[0-9]{10,11}$/.test(tel.replace(/\s/g, ""))) return { ok: false, message: "Telefon numarası 10-11 haneli olmalı." };
   if (!addr) return { ok: false, message: "Lütfen Adres alanını doldurun." };
   if (addr.length > 400) return { ok: false, message: "Adres çok uzun (maks. 400 karakter)." };
   if (name.length > 80) return { ok: false, message: "Ad Soyad çok uzun (maks. 80 karakter)." };
@@ -712,3 +828,56 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 150);
   }
 });
+
+let leafletMap = null;
+let leafletMarker = null;
+
+async function updateMap(cityName, municipalityName) {
+  try {
+    const res = await fetch('./data/belediyeler.json');
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    const cName = Object.keys(data).find(k => k.toLocaleLowerCase('tr-TR') === cityName.toLocaleLowerCase('tr-TR')) || cityName;
+    const info = data[cName];
+    console.log("cityName:", cityName);
+console.log("cName:", cName);
+console.log("info:", info);
+console.log("data keys:", Object.keys(data));
+    
+    const mapDiv = document.getElementById('map');
+    if (!mapDiv) return;
+
+    if (info && info.lat && info.lng) {
+      mapDiv.style.display = 'block';
+      const lat = info.lat;
+      const lng = info.lng;
+
+      if (!leafletMap) {
+        leafletMap = L.map('map').setView([lat, lng], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
+        leafletMarker = L.marker([lat, lng]).addTo(leafletMap);
+      } else {
+        leafletMap.setView([lat, lng], 17);
+        leafletMarker.setLatLng([lat, lng]);
+      }
+      
+      leafletMarker.bindPopup(`<b>${cityName} Belediyesi</b>`).openPopup();
+      setTimeout(() => leafletMap.invalidateSize(), 50);
+      const existing = document.getElementById('gmapsBtn');
+if (existing) existing.remove();
+const gmBtn = document.createElement('a');
+gmBtn.id = 'gmapsBtn';
+gmBtn.href = `https://www.google.com/maps?q=${lat},${lng}`;
+gmBtn.target = '_blank';
+gmBtn.rel = 'noreferrer';
+gmBtn.style.cssText = 'display:block;margin-top:8px;text-align:center;font-size:12px;color:#a78bfa;text-decoration:none;';
+gmBtn.textContent = "📍 Google Maps'te Aç";
+document.getElementById('map').after(gmBtn);
+    } else {
+      mapDiv.style.display = 'none';
+    }
+  } catch (e) {
+    console.error("Map update error:", e);
+  }
+}

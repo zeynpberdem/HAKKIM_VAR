@@ -1,6 +1,5 @@
 const MUNICIPALITIES_PATH = "app/data/municipalities.json";
 
-// In-memory MVP rate-limit (per instance)
 const RATE = {
   windowMs: 60_000,
   max: 20,
@@ -61,17 +60,59 @@ function sanitizeOneLine(s, max) {
 }
 
 function sanitizeMultiLine(s, max) {
-  // address can be multi-line; keep newlines but normalize excessive whitespace
   const t = String(s || "").trim().replace(/\r\n/g, "\n").replace(/[ \t]+/g, " ");
   return t.length > max ? t.slice(0, max) : t;
 }
 
 async function loadMunicipalities() {
-  // Netlify functions run with cwd at repo root
   const fs = await import("node:fs/promises");
   const raw = await fs.readFile(MUNICIPALITIES_PATH, "utf8");
   const parsed = JSON.parse(raw);
   return parsed && typeof parsed === "object" ? parsed : {};
+}
+
+async function loadBelediyelerInfo() {
+  try {
+    const typeofFs = typeof require !== "undefined" ? require("fs/promises") : await import("node:fs/promises");
+    // Since this runs in api/ (or root), we use path from root
+    const raw = await typeofFs.readFile("app/data/belediyeler.json", "utf8");
+    return JSON.parse(raw);
+  } catch (err) {
+    return {};
+  }
+}
+
+function titleTrCity(s) {
+  return String(s || "").trim().toLocaleLowerCase("tr-TR")
+    .split(" ").filter(Boolean)
+    .map(w => w.charAt(0).toLocaleUpperCase("tr-TR") + w.slice(1))
+    .join(" ");
+}
+
+function formatBelediyeChannels(cityData) {
+  const out = [];
+  if (!cityData) return out;
+  if (cityData.telefon) {
+    const p = normalizePhoneDigits(cityData.telefon);
+    if (p) out.push(`Telefon: ${cityData.telefon} (tel:${p})`);
+  }
+  if (cityData.whatsapp) {
+    const w = normalizePhoneDigits(cityData.whatsapp);
+    if (w) out.push(`WhatsApp: ${cityData.whatsapp} (https://wa.me/90${w.startsWith('90') ? w.slice(2) : w})`);
+  }
+  if (cityData.email) {
+    out.push(`E-posta: ${cityData.email} (mailto:${cityData.email})`);
+  }
+  if (cityData.website) {
+    out.push(`Web Sitesi: ${cityData.website}`);
+  }
+  if (cityData.cimer) {
+    out.push(`CİMER: ${cityData.cimer}`);
+  }
+  if (cityData.edevlet) {
+    out.push(`e-Devlet: ${cityData.edevlet}`);
+  }
+  return out;
 }
 
 function upperTr(s) {
@@ -128,7 +169,6 @@ function categoryBasedChannels({ category, city }) {
   const c = normalizeCategory(category);
   const cityName = String(city || "").trim();
 
-  // User-specified mapping (MVP)
   if (c.includes("elektrik")) {
     const local =
       cityName === "Elazığ"
@@ -143,7 +183,7 @@ function categoryBasedChannels({ category, city }) {
     return ["Belediye su/arıza hattı: 185", "Belediye Su Müdürlüğü (online başvuru varsa web sitesinden)"];
   }
   if (c.includes("yol") || c.includes("kaldırım") || c.includes("aydinlatma") || c.includes("aydınlatma") || c.includes("sokak")) {
-    return ["Belediye (Beyaz Masa / ALO 153): 153"];
+    return [`${String(city || "")} Belediyesi (Beyaz Masa): 153`, "TEDAŞ: 186"];
   }
   if (c.includes("çöp") || c.includes("cop") || c.includes("atık") || c.includes("atik")) {
     return ["Belediye Temizlik Müdürlüğü (ALO 153): 153"];
@@ -152,7 +192,6 @@ function categoryBasedChannels({ category, city }) {
     return ["Zabıta (ALO 153): 153", "Jandarma: 156"];
   }
 
-  // General complaint
   return ["CİMER: 150", "BİMER (eski başvuru kanalı)"];
 }
 
@@ -169,8 +208,7 @@ function buildSignatureBlock(identity) {
     `Ad Soyad: ${fullName}\n` +
     `T.C. Kimlik No: ${tcKimlik}\n` +
     `Adres: ${address}\n` +
-    `Telefon: ${phone}\n` +
-    `İmza: ${fullName !== "…" ? fullName : "…"}\n`
+    `Telefon: ${phone}\n`
   );
 }
 
@@ -178,13 +216,14 @@ function ensureSignatureBlock(petitionText, identity) {
   const sig = buildSignatureBlock(identity).trim();
   const t = String(petitionText || "").trim();
 
-  // Replace placeholders if the model produced them
   const replaced = t
     .replace(/Ad\s*Soyad\s*:\s*.*$/gim, `Ad Soyad: ${identity.fullName}`)
     .replace(/T\.?\s*C\.?\s*Kimlik\s*No\s*:\s*.*$/gim, `T.C. Kimlik No: ${identity.tcKimlik}`)
     .replace(/Adres\s*:\s*.*$/gim, `Adres: ${identity.address}`)
     .replace(/Telefon\s*:\s*.*$/gim, `Telefon: ${identity.phone}`)
-    .replace(/İmza\s*:\s*.*$/gim, `İmza: ${identity.fullName}`);
+    .replace(/İmza\s*:\s*.*$/gim, "")
+    .replace(/Saygılarımla[,.]?\s*$/gim, "")
+    .trim();
 
   const hasName = /Ad\s*Soyad\s*:/i.test(replaced);
   const hasTc = /T\.?\s*C\.?\s*Kimlik\s*No\s*:/i.test(replaced);
@@ -195,17 +234,16 @@ function ensureSignatureBlock(petitionText, identity) {
   return `${replaced}\n\n${sig}`.trim();
 }
 
-function fallbackPetition({ municipality, city, district, category, userText, identity }) {
+function fallbackPetition({ municipality, city, district, category, identity }) {
   const petition =
     `T.C.\n${municipality} Başkanlığı'na\n\n` +
     `Konu: ${category} hakkında şikayet ve talep\n\n` +
     `Sayın Yetkili,\n\n` +
-    `${city} ili ${district} ilçesinde ikamet etmekteyim. ${userText}\n\n` +
-    `Yaşanan durumun vatandaşların günlük yaşamını ve güvenliğini olumsuz etkilediğini bilgilerinize sunar; ` +
-    `konunun incelenerek gerekli işlemlerin yapılmasını arz ederim.\n`;
+    `${city} ili ${district} ilçesinde ikamet etmekteyim. ${category} konusunda ciddi bir sorun yaşanmakta olup bu durum mahalle sakinlerinin günlük yaşamını ve güvenliğini olumsuz etkilemektedir.\n\n` +
+    `Söz konusu sorunun en kısa sürede yerinde incelenerek gerekli teknik ve idari tedbirlerin alınması, kalıcı çözüm sağlanması hususunda gereğini saygılarımla arz ederim.\n`;
 
   if (identity) return ensureSignatureBlock(petition, identity) + "\n";
-  return petition + "Ad Soyad: …\nT.C. Kimlik No: …\nAdres: …\nTelefon: …\nİmza: …\n";
+  return petition + "Ad Soyad: …\nT.C. Kimlik No: …\nAdres: …\nTelefon: …\n";
 }
 
 async function callGemini({ apiKey, model, systemPrompt, userPrompt, timeoutMs }) {
@@ -289,7 +327,6 @@ function parseTwoPartOutput(llmText) {
       .replace(/^:\s*/gm, "")
       .trim();
   } else {
-    // Eğer format bozulursa: tüm metni dilekçe gibi döndür
     parts.petitionText = t.trim();
   }
 
@@ -356,17 +393,21 @@ exports.handler = async (event) => {
     null;
   const contact = { ...schema, ...(override || {}) };
   const municipalityName = municipality || getMunicipalityName(city, district);
+  
+  const bData = await loadBelediyelerInfo();
+  const belediCityData = bData[city] || bData[titleTrCity(city)] || null;
+  const dataChannels = formatBelediyeChannels(belediCityData);
+
   const municipalityChannels = contactToChannels(municipalityName, contact);
   const categoryChannels = categoryBasedChannels({ category, city });
-  const baseChannels = uniqStrings([...categoryChannels, ...municipalityChannels]);
+  const baseChannels = uniqStrings([...dataChannels, ...categoryChannels, ...municipalityChannels]);
 
-  // Fallback (anahtar yoksa)
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   if (!isNonEmptyString(apiKey)) {
     return json(200, {
       channels: baseChannels,
-      petitionText: fallbackPetition({ municipality, city, district, category, userText, identity: ident }),
+      petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
       meta: { mode: "fallback_no_key" },
     });
   }
@@ -377,37 +418,32 @@ exports.handler = async (event) => {
     `1) İlgili kurumların resmi başvuru kanallarını kurum kurum listele.\n` +
     `2) Şikayeti ${municipalityName} Başkanlığı'na hitaben resmi, hukuki ve açıklayıcı bir dilekçeye dönüştür.\n` +
     `Bunu yaparken kullanıcının yazdığı metni birebir kullanma; şu kurallara kesinlikle uy:\n` +
-    `- Yazım ve imla hatalarını tamamen düzelt (örneğin 'ısıklarımız' hatasını 'ışıklarımız' olarak düzelt).\n` +
-    `- Günlük konuşma dilini ('yardım edin lutfen', 'bilmiyorum' vb.) kesinlikle kullanma, bunun yerine resmi, hukuki ve saygılı ifadeler ('gereğinin yapılmasını arz ederim' vb.) tercih et.\n` +
-    `- Kullanıcının verdiği il, ilçe ve sorun kategorisi bilgilerini metin içinde mutlaka organik bir şekilde geçir.\n` +
-    `- Dilekçe gövdesini genişleterek en az 3 ayrı paragraf halinde yaz:\n` +
-    `   * 1. Paragraf: Sorunun tam olarak ne olduğu ve tahminen ne kadar süredir devam ettiği.\n` +
-    `   * 2. Paragraf: Bu sorunun vatandaşı, çevreyi veya sosyal yaşamı nasıl olumsuz etkilediği (hukuki ve mantıksal dayanaklarıyla).\n` +
-    `   * 3. Paragraf: İlgili makamdan net çözüm talebi (arz ve talep cümlesi).\n` +
-    `ÖNEMLİ: Dilekçe metninin HİÇBİR YERİNE (sağ üst, son vb.) tarih ekleme. Tarih bilgisi sistem tarafından eklenecektir.\n` +
+    `- Yazım ve imla hatalarını tamamen düzelt.\n` +
+    `- Günlük konuşma dilini kesinlikle kullanma, resmi ve saygılı ifadeler kullan.\n` +
+    `- Kullanıcının verdiği il, ilçe ve sorun kategorisi bilgilerini metin içinde organik geçir.\n` +
+    `- Dilekçe gövdesini en az 3 ayrı paragraf halinde yaz:\n` +
+    `   * 1. Paragraf: Sorunun ne olduğu ve ne kadar süredir devam ettiği.\n` +
+    `   * 2. Paragraf: Bu sorunun vatandaşı nasıl olumsuz etkilediği.\n` +
+    `   * 3. Paragraf: İlgili makamdan net çözüm talebi.\n` +
+    `ÖNEMLİ: Dilekçeye tarih ekleme. Tarih sistem tarafından eklenecektir.\n` +
+    `ÖNEMLİ: Dilekçeye İmza satırı ekleme. İmza satırı sistem tarafından eklenecektir.\n` +
     `Kanuni dayanak atıfları opsiyoneldir; uydurma bilgi üretme.\n` +
-    `Dilekçenin sonunda kullanıcı kimlik/iletişim bilgileri mutlaka yer alsın.\n` +
-    `Aşağıdaki "kategoriye göre ilgili kurumlar/numaralar" listesini temel al:\n` +
+    `Aşağıdaki kanalları temel al:\n` +
     baseChannels.map((x) => `- ${x}`).join("\n") +
-    `\n\n` +
-    `Ayrıca belediye kaydı varsa bunu da ekle:\n` +
+    `\n\nBelediye kanalları:\n` +
     (municipalityChannels.length ? municipalityChannels.map((x) => `- ${x}`).join("\n") : "- (belediye kanalı yok)") +
-    `\n\n` +
-    `Kurumlar için mümkünse telefon + online başvuru kanalı (web formu/e-posta/WhatsApp) başlıklarını ayrı ayrı yaz. Online kanal bilmiyorsan "online kanal bulunamadı" de, uydurma link/iletişim yazma.\n\n` +
-    `Yanıtını KESİNLİKLE şu formatta ver, başka format kullanma:\n` +
+    `\n\nYanıtını KESİNLİKLE şu formatta ver:\n` +
     `KISIM 1: İletişim Kanalları\n` +
-    `- [Kanal adı]: [Telefon/bilgi]\n` +
-    `- [Kanal adı]: [Telefon/bilgi]\n` +
+    `- [Kanal adı]: [Telefon/bilgi]\n\n` +
     `KISIM 2: Dilekçe\n` +
     `T.C.\n` +
-    `[Belediye Adı] Başkanlığı'na\n` +
-    `Konu: [Kategori] hakkında şikayet ve talep\n` +
-    `Sayın Yetkili,\n` +
-    `[1. paragraf: sorunun ne olduğu, ne kadar süredir devam ettiği — yazım hatalarını düzelt, resmi dile çevir]\n` +
-    `[2. paragraf: vatandaşı ve çevreyi nasıl olumsuz etkilediği]\n` +
-    `[3. paragraf: çözüm talebi]\n` +
-    `Saygılarımla,\n` +
-    `[Ad Soyad]\n` +
+    `[Belediye Adı] Başkanlığı'na\n\n` +
+    `Konu: [Kategori] hakkında şikayet ve talep\n\n` +
+    `Sayın Yetkili,\n\n` +
+    `[1. paragraf]\n\n` +
+    `[2. paragraf]\n\n` +
+    `[3. paragraf]\n\n` +
+    `Ad Soyad: [Ad Soyad]\n` +
     `T.C. Kimlik No: [TC]\n` +
     `Adres: [Adres]\n` +
     `Telefon: [Telefon]\n`;
@@ -429,14 +465,14 @@ exports.handler = async (event) => {
       model,
       systemPrompt,
       userPrompt,
-      timeoutMs: 4500,
+      timeoutMs: 9000,
     });
 
     const parsed = parseTwoPartOutput(llmText);
-    const channels = uniqStrings([...(parsed.channels || []), ...baseChannels]);
+    const channels = uniqStrings([...dataChannels, ...(parsed.channels || [])]);
     const petitionRaw =
       parsed.petitionText ||
-      fallbackPetition({ municipality, city, district, category, userText, identity: ident });
+      fallbackPetition({ municipality, city, district, category, identity: ident });
     const petition = ensureSignatureBlock(petitionRaw, ident);
 
     return json(200, {
@@ -445,12 +481,10 @@ exports.handler = async (event) => {
       meta: { mode: "gemini" },
     });
   } catch {
-    // Timeout / API error fallback
     return json(200, {
-      channels: baseChannels,
-      petitionText: fallbackPetition({ municipality, city, district, category, userText, identity: ident }),
+      channels: uniqStrings([...dataChannels, ...baseChannels]),
+      petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
       meta: { mode: "fallback_llm_error" },
     });
   }
 };
-

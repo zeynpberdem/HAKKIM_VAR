@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="./styles.css" />
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, sans-serif; background: #060813; color: white; height: 100vh; overflow: hidden; }
+body { font-family: system-ui, sans-serif; background: #060813; color: white; min-height: 100vh; }
 canvas#bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-.page { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(109,40,217,0.15) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(8,145,178,0.12) 0%, transparent 45%); }
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(109,40,217,0.15) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(8,145,178,0.12) 0%, transparent 45%); }
 nav { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(6,8,19,0.92); backdrop-filter: blur(12px); flex-shrink: 0; }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-text { font-size: 22px; font-weight: 700; color: white; }
@@ -32,10 +32,10 @@ h1 .grad { background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-backgro
 .snum { font-size: 22px; font-weight: 700; color: #a78bfa; }
 .slbl { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
 .steps-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; }
-.step { background: rgba(109,40,217,0.05); border: 1px solid rgba(109,40,217,0.18); border-radius: 10px; padding: 0.7rem 0.8rem; }
-.step-n { width: 18px; height: 18px; border-radius: 50%; background: rgba(109,40,217,0.25); border: 1px solid rgba(109,40,217,0.4); color: #a78bfa; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; margin-bottom: 0.5rem; }
-.step h3 { font-size: 12px; font-weight: 600; margin-bottom: 0.2rem; }
-.step p { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+.step { background: rgba(109,40,217,0.05); border: 1px solid rgba(109,40,217,0.18); border-radius: 10px; padding: 1.5rem; }
+.step-n { width: 32px; height: 32px; border-radius: 50%; background: rgba(109,40,217,0.25); border: 1px solid rgba(109,40,217,0.4); color: #a78bfa; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-bottom: 0.5rem; }
+.step h3 { font-size: 15px; font-weight: 600; margin-bottom: 0.2rem; }
+.step p { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.4; }
 .preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(109,40,217,0.2); border-radius: 14px; padding: 1.2rem; box-shadow: 0 0 40px rgba(109,40,217,0.1); }
 .prev-top { display: flex; align-items: center; gap: 5px; padding-bottom: 0.8rem; margin-bottom: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
 .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -94,33 +94,65 @@ h1 .grad { background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-backgro
       <div class="steps-row" id="howItWorks">
         <div class="step"><div class="step-n">1</div><h3>Sorununu Seç</h3><p>İl/ilçe ve kategori seçerek doğru kanalı bul.</p></div>
         <div class="step"><div class="step-n">2</div><h3>Cümlelerinle Yaz</h3><p>Sorununu anlat; AI resmi dile çevirsin.</p></div>
-        <div class="step"><div class="step-n">3</div><h3>Kopyala & Gönder</h3><p>Kanalları ve dilekçeyi tek tıkla kopyala.</p></div>
+        <div class="step"><div class="step-n">3</div><h3>Kopyala & Gönder</h3><p>Kanalları ve dilekçeyi tek tıkla kopyala ve pdf olarak indir.</p></div>
       </div>
+      
     </div>
     <div style="display: flex; flex-direction: column; justify-content: center;">
       <div class="preview">
         <div class="prev-top">
-          <div class="dot" style="background:#7c3aed"></div>
-          <div class="dot" style="background:#a78bfa"></div>
-          <div class="dot" style="background:#c4b5fd"></div>
-          <span class="ptxt">Örnek çıktı</span>
+          <div class="dots" style="display:flex;gap:5px;">
+            <div class="dot" style="background:#7c3aed"></div>
+            <div class="dot" style="background:#a78bfa"></div>
+            <div class="dot" style="background:#c4b5fd"></div>
+            <span class="ptxt">Örnek çıktı</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);color:#6ee7b7;padding:0.2rem 0.6rem;border-radius:20px;font-size:10px;">
+            <span style="width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block;"></span>
+            Belediye doğrulandı
+          </div>
         </div>
+      
         <div class="info-r"><span class="ik">İl / İlçe</span><span class="iv">Elazığ / Karakoçan</span></div>
         <div class="info-r"><span class="ik">Sorun</span><span class="iv">Sokak Aydınlatması</span></div>
-        <div class="info-r"><span class="ik">İletişim Kanalları</span><span class="iv"></span></div>
+        <div class="info-r">
+          <span class="ik">Telefon</span>
+          <span class="iv" style="color:#a78bfa;font-size:11px;">📞 0424 248 47 01</span>
+        </div>
+        <div class="info-r">
+          <span class="ik">Web Sitesi</span>
+          <span class="iv" style="color:#67e8f9;font-size:11px;">🌐 elazig.bel.tr</span>
+        </div>
+      
         <div class="chips">
           <span class="chip">ALO 153</span>
           <span class="chip">TEDAŞ 186</span>
-          <span class="chip">CİMER 150</span>
+          <span class="chip" style="background:rgba(52,211,153,0.15);border-color:rgba(52,211,153,0.3);color:#6ee7b7;">CİMER 150</span>
         </div>
-        <div class="dilekce">Sayın Yetkili,<br><br>Elazığ ili Karakoçan ilçesinde ikamet etmekteyim. Sokağımızdaki aydınlatma yaklaşık 1 haftadır çalışmamaktadır.<br><br>Yaşanan durum vatandaşların güvenliğini olumsuz etkilemektedir. Gereğini saygılarımla arz ederim.</div>
-        <div class="copy-r"><span>PDF İndir</span><button>Kopyala</button></div>
+      
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.7rem;">
+          <span style="display:flex;align-items:center;gap:4px;padding:0.28rem 0.65rem;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.1);color:#6ee7b7;">💬 WhatsApp</span>
+          <span style="display:flex;align-items:center;gap:4px;padding:0.28rem 0.65rem;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid rgba(6,182,212,0.3);background:rgba(6,182,212,0.1);color:#67e8f9;">🌐 Web Sitesi</span>
+        </div>
+      
+        <div class="dilekce">
+          Sayın Yetkili,<br><br>
+          Elazığ ili Karakoçan ilçesinde ikamet etmekteyim. Sokağımızdaki aydınlatma yaklaşık 1 haftadır çalışmamaktadır.<br><br>
+          Yaşanan durum vatandaşların güvenliğini olumsuz etkilemektedir. Gereğini saygılarımla arz ederim.
+        </div>
+      
+      
+        <div class="copy-r">
+          <span>📄 PDF İndir</span>
+          <button>Kopyala</button>
+        </div>
       </div>
-      <div class="quick-row">
-        <span class="qt quickBtn" data-category="Sokak Aydınlatması">Sokak Lambası</span>
-        <span class="qt quickBtn" data-category="Su Kesintisi">Su Kesintisi</span>
-        <span class="qt quickBtn" data-category="Yol/Kaldırım">Bozuk Yol</span>
-        <span class="qt quickBtn" data-category="Çöp/Atık">Çöp Sorunu</span>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
+        <span class="qt quickBtn" data-category="Sokak Aydınlatması" style="text-align:center;justify-content:center;display:flex;font-size:11px;">Sokak Lambası</span>
+        <span class="qt quickBtn" data-category="Su Kesintisi" style="text-align:center;justify-content:center;display:flex;font-size:11px;">Su Kesintisi</span>
+        <span class="qt quickBtn" data-category="Yol/Kaldırım" style="text-align:center;justify-content:center;display:flex;font-size:11px;">Bozuk Yol</span>
+      </div>
+       
       </div>
     </div>
   </div>

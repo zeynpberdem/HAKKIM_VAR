@@ -44,7 +44,14 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 
 .char-count { font-size: 10px; color: rgba(255,255,255,0.25); text-align: right; margin-top: 0.3rem; }
 
-.submit-wrap { margin-top: 1.5rem; display: flex; justify-content: center; }
+.submit-wrap {
+  margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;
+  position: sticky; bottom: 1.5rem; z-index: 10;
+  background: rgba(6, 8, 19, 0.85); backdrop-filter: blur(12px);
+  padding: 1rem 1.5rem; border-radius: 14px;
+  border: 1px solid rgba(109, 40, 217, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
 .btn-submit {
   background: linear-gradient(135deg, #7c3aed, #5b21b6);
   color: white; border: none; padding: 0.85rem 3rem;
@@ -60,6 +67,8 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .select-wrap::after { content: '▾'; position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); pointer-events: none; font-size: 12px; }
 </style>
 <link rel="stylesheet" href="./styles.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <canvas id="bg"></canvas>
@@ -80,11 +89,15 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     <div class="back-btn" onclick="history.back()">← Ana Sayfaya Dön</div>
   </nav>
 
-  <div class="main" style="align-items: flex-start;">
+  <div class="main" style="align-items: flex-start; padding-top: 1.5rem;">
     <form id="complaintForm" class="form-card" autocomplete="off">
-      <div class="form-header">
-        <h2>Başvuru Yap</h2>
-        <p>Bilgileri doldur, AI ile başvuru kanalı ve dilekçeni hazırla.</p>
+      <div class="form-header" style="text-align:center;margin-bottom:2rem;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(109,40,217,0.18);border:1px solid rgba(109,40,217,0.35);color:#c4b5fd;padding:0.3rem 1rem;border-radius:20px;font-size:11px;font-weight:500;margin-bottom:1rem;">
+          <span style="width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block;animation:pulse 2s infinite;"></span>
+          AI Destekli Vatandaş Platformu
+        </div>
+        <h2 style="font-size:36px;font-weight:800;margin-bottom:0.5rem;">Başvurunuzu <span style="background:linear-gradient(90deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Hazırlayalım</span></h2>
+        <p style="font-size:14px;color:rgba(255,255,255,0.4);max-width:420px;margin:0 auto;"></p>
       </div>
 
       <div class="row3">
@@ -131,24 +144,24 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
       <div class="row2">
         <div class="field">
           <label>Ad Soyad</label>
-          <input id="fullName" type="text" placeholder="Örn: Zeynep Yılmaz" required>
+          <input id="fullName" type="text" placeholder="Örn: Zeynep Yılmaz" required pattern="[A-Za-zğüşıöçĞÜŞİÖÇ\s]+" oninput="this.value=this.value.replace(/[0-9]/g,'')">
         </div>
         <div class="field">
           <label>T.C. Kimlik No</label>
-          <input id="tcKimlik" type="text" placeholder="11 haneli" maxlength="11" required>
+          <input id="tcKimlik" type="text" placeholder="11 haneli" maxlength="11" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
         </div>
         <div class="field">
           <label>Telefon</label>
-          <input id="phone" type="text" placeholder="05xx xxx xx xx" required>
+          <input type="text" id="phone" placeholder="5xx xxx xx xx" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/^0+/,'')">
         </div>
       </div>
 
       <div class="row1 field">
         <label>Adres</label>
-        <textarea id="address" rows="2" placeholder="Mahalle, sokak, no, il/ilçe" style="height:50px" required></textarea>
+        <textarea id="address" rows="2" placeholder="Mahalle, sokak, no, il/ilçe" style="height:70px" required></textarea>
       </div>
 
-      <div class="submit-wrap" style="justify-content:space-between; align-items:center;">
+      <div class="submit-wrap">
         <div class="status" id="status" role="status" aria-live="polite"></div>
         <button id="generateBtn" type="submit" class="btn-submit">AI Destekli Çözüm Üret →</button>
       </div>
@@ -171,7 +184,9 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
           <div class="infoItem"><span class="infoKey">E‑posta</span><span class="infoVal" id="infoEmail">null</span></div>
           <div class="infoItem"><span class="infoKey">Web sitesi</span><span class="infoVal" id="infoWebsite">null</span></div>
           <div class="infoItem"><span class="infoKey">Belediye başkanı</span><span class="infoVal" id="infoMayor">null</span></div>
+          <div class="infoItem"><span class="infoKey">Konum</span><span class="infoVal" id="infoLocation">aşağıda gösterilmektedir</span></div>
         </div>
+        <div id='map' style='height:280px; border-radius:12px; margin-top:12px;'></div>
       </section>
 
       <section id="result" class="result hidden" aria-live="polite">
@@ -198,7 +213,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     </form>
   </div>
 </div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script type="module" src="./main.js"></script>
 <script>
@@ -218,6 +233,29 @@ function draw(){
   requestAnimationFrame(draw);
 }
 draw();
+// Leaflet harita başlatma
+let map = null;
+
+window.initMap = function(lat, lng, belediyelAdi) {
+  const mapDiv = document.getElementById('map');
+  if (!mapDiv) return;
+  
+  if (map) {
+    map.remove();
+    map = null;
+  }
+  
+  map = L.map('map').setView([lat, lng], 14);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+  
+  L.marker([lat, lng])
+    .addTo(map)
+    .bindPopup('<b>' + belediyelAdi + '</b>')
+    .openPopup();
+};
 </script>
 </body>
 </html>

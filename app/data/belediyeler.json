@@ -1,0 +1,52 @@
+{
+  "Elazığ": {
+    "website": "https://www.elazig.bel.tr/iletisim/",
+    "telefon": "0424 248 47 01",
+    "whatsapp": "0543 232 31 53",
+    "email": "elazig@elazig.bel.tr",
+    "cimer": "https://cimer.iletisim.gov.tr",
+    "edevlet": "https://www.turkiye.gov.tr/elazig-belediyesi",
+    "lat": 38.6681911,
+  "lng": 39.1811152
+  },
+  "Diyarbakır": {
+    "website": "https://www.diyarbakir.bel.tr/iletisim.html",
+    "telefon": "0412 229 48 80",
+    "whatsapp": "0412 153 00 00",
+    "email": "diyarbakirbb@hs03.kep.tr",
+    "cimer": "https://cimer.iletisim.gov.tr",
+    "edevlet": "https://www.turkiye.gov.tr/diyarbakir-buyuksehir-belediyesi",
+    "lat": 37.9196142,
+  "lng": 40.2323251
+  },
+  "Malatya": {
+    "website": "https://www.malatya.bel.tr/iletisim",
+    "telefon": "444 51 44",
+    "whatsapp": "+90 530 465 44 44",
+    "email": "info@malatya.bel.tr",
+    "cimer": "https://cimer.iletisim.gov.tr",
+    "edevlet": "https://www.turkiye.gov.tr/malatya-buyuksehir-belediyesi",
+    "lat": 38.348587,
+    "lng": 38.2942352
+  },
+  "Erzincan": {
+    "website": "https://www.erzincan.bel.tr",
+    "telefon": "444 9 024",
+    "whatsapp": null,
+    "email": null,
+    "cimer": "https://cimer.iletisim.gov.tr",
+    "edevlet": "https://www.turkiye.gov.tr/erzincan-belediyesi",
+    "lat": 39.748577,
+  "lng": 39.4791762
+  },
+  "Tunceli": {
+    "website": "https://tunceli.bel.tr/iletisim",
+    "telefon": "+90 428 212 13 27",
+    "whatsapp": null,
+    "email": "info@tunceli.bel.tr",
+    "cimer": "https://cimer.iletisim.gov.tr",
+    "edevlet": "https://www.turkiye.gov.tr/tunceli-belediyesi",
+    "lat": 39.106704,
+    "lng": 39.548229
+  }
+}

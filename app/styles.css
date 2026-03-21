@@ -41,7 +41,7 @@ nav {
 .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
 
 h1 { font-size: 46px; font-weight: 700; line-height: 1.15; margin-bottom: 1.2rem; }
-h1 em { font-style: normal; background: linear-gradient(90deg, #a78bfa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h1 em { font-style: normal; background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 .desc { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 2rem; max-width: 460px; }
 
@@ -91,7 +91,8 @@ h1 em { font-style: normal; background: linear-gradient(90deg, #a78bfa, #34d399)
 .dilekce {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px; padding: 0.9rem 1rem; margin-top: 0.5rem;
-  font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.7; font-style: italic;
+  font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.7; font-style: italic; max-height: 100px;
+  overflow: hidden;
 }
 .copy-btn { display: flex; justify-content: flex-end; margin-top: 0.6rem; }
 .copy-btn button {
@@ -105,16 +106,16 @@ h1 em { font-style: normal; background: linear-gradient(90deg, #a78bfa, #34d399)
 .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
 .step {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px; padding: 1.2rem;
+  border-radius: 12px; padding: 1.5rem;
 }
 .step-num {
-  width: 30px; height: 30px; border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
   background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.35);
   color: #a78bfa; display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 600; margin-bottom: 0.9rem;
+  font-size: 14px; font-weight: 600; margin-bottom: 0.9rem;
 }
-.step h3 { font-size: 14px; font-weight: 600; margin-bottom: 0.4rem; }
-.step p { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+.step h3 { font-size: 15px; font-weight: 600; margin-bottom: 0.4rem; }
+.step p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
 
 .quick-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2rem; }
 .quick {
@@ -223,30 +224,30 @@ select:focus, input:focus, textarea:focus{
 .status.error{ color: #ff6b6b; }
 
 .infoCard{
-  margin-top: 16px; padding: 16px; border-radius: 16px;
+  margin-top: 16px; padding: 12px 14px; border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);
 }
-.infoHeader{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 12px; }
-.infoTitle{ font-size: 14px; font-weight: 600; }
-.infoSubtitle{ font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
-.infoActions{ display:flex; gap: 10px; flex-wrap: wrap; }
+.infoHeader{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; }
+.infoTitle{ font-size: 13px; font-weight: 600; }
+.infoSubtitle{ font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.infoActions{ display:flex; gap: 8px; flex-wrap: wrap; }
+.infoActions .ghost { padding: 4px 8px; font-size: 11px; }
 
-.infoGrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media(max-width: 600px) { .infoGrid { grid-template-columns: 1fr; } }
+.infoGrid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
 .infoItem{
-  display:flex; justify-content:space-between; padding: 10px 12px;
-  border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
-  font-size: 13px;
+  display:flex; justify-content:space-between; padding: 6px 10px;
+  border-radius: 6px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
+  font-size: 12px; align-items: center;
 }
-.infoKey{ color: rgba(255,255,255,0.5); }
+.infoKey{ color: rgba(255,255,255,0.45); font-size: 11px; }
 .infoVal{ font-weight: 500; text-align: right; }
 
-.resultGrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+.resultGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 20px; }
 @media(max-width: 768px) { .resultGrid { grid-template-columns: 1fr; } }
 
 .resultCard{
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 16px;
+  border-radius: 16px; padding: 16px; display: flex; flex-direction: column;
 }
 .resultHeader{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
 .subH2{ font-size: 15px; font-weight: 600; }
@@ -256,11 +257,23 @@ select:focus, input:focus, textarea:focus{
   background: rgba(255,255,255,0.05); color: white; cursor: pointer; font-size: 12px;
 }
 
-.channelsList{ list-style-position: inside; color: rgba(255,255,255,0.8); font-size: 14px; }
-.channelsList li { margin-bottom: 6px; padding-left: 5px; }
+.channelsList { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.channelsList li { margin-bottom: 0; padding: 0; }
+.channel-card {
+  display: block; padding: 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(124,58,237,0.4);
+  color: white; text-decoration: none; transition: all 0.2s;
+  font-size: 14px;
+}
+.channel-card:hover {
+  background: rgba(124,58,237,0.1); border-color: #a78bfa;
+  box-shadow: 0 0 15px rgba(124,58,237,0.4);
+  transform: translateY(-2px);
+}
+
 .petitionBox{
   background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);
   border-radius: 10px; padding: 14px; font-size: 13px; color: rgba(255,255,255,0.8);
   white-space: pre-wrap; font-family: inherit; line-height: 1.5;
-  max-height: 350px; overflow-y: auto;
+  height: auto; overflow: visible; flex: 1;
 }
