@@ -169,35 +169,85 @@ function categoryBasedChannels({ category, city }) {
   const c = normalizeCategory(category);
   const cityName = String(city || "").trim();
 
+  // Her kategoride ortak kanallar
+  const common = [
+    "CİMER (Cumhurbaşkanlığı İletişim Merkezi): 150 | https://www.cimer.gov.tr",
+    "BİMER (Başbakanlık İletişim Merkezi): 150 | https://www.bimer.gov.tr",
+    "e-Devlet Şikayet / Başvuru: https://www.turkiye.gov.tr",
+    `${cityName} Belediyesi Beyaz Masa: 153`,
+    `${cityName} Belediyesi E-posta: iletisim@${cityName.toLocaleLowerCase("tr-TR").replace(/\s/g, "")}bel.tr`,
+  ];
+
   if (c.includes("elektrik")) {
-    const local =
+    return [
+      "TEDAŞ (Elektrik Arıza Hattı): 186",
       cityName === "Elazığ"
-        ? "Yerel elektrik dağıtım şirketi (Elazığ için: EPDK/MEKE)"
-        : "Yerel elektrik dağıtım şirketi";
-    return ["TEDAŞ: 186", local];
+        ? "EPDK/MEKE Elazığ Elektrik Dağıtım: 186"
+        : "Yerel Elektrik Dağıtım Şirketi: 186",
+      "EPDK (Enerji Piyasası Düzenleme Kurumu): 444 3 752 | https://www.epdk.gov.tr",
+      ...common,
+    ];
   }
   if (c.includes("doğalgaz") || c.includes("dogalgaz")) {
-    return ["BOTAŞ: 187", "Yerel doğalgaz dağıtım şirketi"];
+    return [
+      "BOTAŞ Doğalgaz Arıza Hattı: 187",
+      "Yerel Doğalgaz Dağıtım Şirketi: 187",
+      "EPDK Doğalgaz Şikayetleri: 444 3 752 | https://www.epdk.gov.tr",
+      ...common,
+    ];
   }
   if (c.includes("su")) {
-    return ["Belediye su/arıza hattı: 185", "Belediye Su Müdürlüğü (online başvuru varsa web sitesinden)"];
+    return [
+      `${cityName} Belediyesi Su ve Kanalizasyon Müdürlüğü: 185`,
+      "Belediye Su Arıza Hattı: 185",
+      "DSİ (Devlet Su İşleri): 444 4 374",
+      ...common,
+    ];
   }
   if (c.includes("yol") || c.includes("kaldırım") || c.includes("aydinlatma") || c.includes("aydınlatma") || c.includes("sokak")) {
-    return [`${String(city || "")} Belediyesi (Beyaz Masa): 153`, "TEDAŞ: 186"];
+    return [
+      `${cityName} Belediyesi Fen İşleri Müdürlüğü: 153`,
+      `${cityName} Belediyesi Beyaz Masa: 153`,
+      "Karayolları Genel Müdürlüğü (devlet yolları): 444 1 999",
+      "TEDAŞ (Sokak aydınlatma): 186",
+      ...common,
+    ];
   }
   if (c.includes("çöp") || c.includes("cop") || c.includes("atık") || c.includes("atik")) {
     return [
-      `${cityName} Belediyesi Temizlik Müdürlüğü (ALO 153): 153`,
-      "CİMER (Cumhurbaşkanlığı İletişim Merkezi): 150",
-      "Çevre ve Şehircilik İl Müdürlüğü: 444 1 372",
-      "e-Devlet Şikayet Hattı: www.turkiye.gov.tr",
+      `${cityName} Belediyesi Temizlik İşleri Müdürlüğü: 153`,
+      "Çevre ve Şehircilik Bakanlığı İl Müdürlüğü: 444 1 372",
+      "Çevre Şikayet Hattı (ÇED): 181",
+      ...common,
     ];
   }
   if (c.includes("gürültü") || c.includes("gurultu")) {
-    return ["Zabıta (ALO 153): 153", "Jandarma: 156"];
+    return [
+      `${cityName} Belediyesi Zabıta Müdürlüğü: 153`,
+      "Jandarma İhbar Hattı: 156",
+      "Polis İmdat: 155",
+      "Çevre Gürültü Şikayeti (ÇŞB): 181",
+      ...common,
+    ];
+  }
+  if (c.includes("park") || c.includes("yeşil")) {
+    return [
+      `${cityName} Belediyesi Park ve Bahçeler Müdürlüğü: 153`,
+      ...common,
+    ];
+  }
+  if (c.includes("ulaşım") || c.includes("ulasim") || c.includes("otobüs") || c.includes("otobus")) {
+    return [
+      `${cityName} Belediyesi Ulaşım Hizmetleri Müdürlüğü: 153`,
+      "Karayolları Taşımacılık (UKOME): 153",
+      ...common,
+    ];
   }
 
-  return ["CİMER: 150", "BİMER (eski başvuru kanalı)"];
+  return [
+    `${cityName} Belediyesi Genel Bilgi: 153`,
+    ...common,
+  ];
 }
 
 function buildSignatureBlock(identity) {
