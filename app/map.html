@@ -277,7 +277,7 @@ function renderMap(complaints) {
     const maxCount = Math.max(...heatPoints.map(p => p[2]), 1);
     heatLayer = L.heatLayer(heatPoints, {
       radius: 35, blur: 25, maxZoom: 10, max: maxCount,
-      gradient: { 0.2: '#3b82f6', 0.45: '#f59e0b', 0.7: '#ef4444' }
+      gradient: { 0.1: '#3b82f6', 0.35: '#f59e0b', 0.6: '#ef4444' }
     }).addTo(map);
   }
 }
