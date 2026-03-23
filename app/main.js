@@ -744,7 +744,6 @@ function validateInputs() {
   const category = categorySelect.value;
   const text = userText.value.trim();
   const name = fullName.value.trim();
-  const addr = address.value.trim();
   const tel = phone.value.trim();
 
   if (!rec) return { ok: false, message: "Lütfen il ve ilçe/belediye seçin." };
@@ -753,8 +752,7 @@ function validateInputs() {
   if (text.length > 2000) return { ok: false, message: "Metin çok uzun (maks. 2000 karakter)." };
   if (!name) return { ok: false, message: "Lütfen Ad Soyad alanını doldurun." };
   if (!tel) return { ok: false, message: "Lütfen Telefon alanını doldurun." };
-  if (!addr) return { ok: false, message: "Lütfen Adres alanını doldurun." };
-  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: "", address: addr, phone: tel } };
+  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: "", address: "", phone: tel } };
 }
 
 function setLoading(isLoading) {
@@ -764,7 +762,6 @@ function setLoading(isLoading) {
   categorySelect.disabled = isLoading;
   userText.disabled = isLoading;
   fullName.disabled = isLoading;
-  address.disabled = isLoading;
   phone.disabled = isLoading;
 }
 

@@ -418,8 +418,8 @@ exports.handler = async (event) => {
   if (!ident) {
     return json(400, { error: "Kimlik bilgileri eksik." });
   }
-  if (![ident.fullName, ident.address, ident.phone].every(isNonEmptyString)) {
-    return json(400, { error: "Ad Soyad, Adres ve Telefon zorunlu." });
+  if (![ident.fullName, ident.phone].every(isNonEmptyString)) {
+    return json(400, { error: "Ad Soyad ve Telefon zorunlu." });
   }
 
   const all = await loadMunicipalities().catch(() => []);
