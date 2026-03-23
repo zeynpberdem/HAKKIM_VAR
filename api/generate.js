@@ -199,14 +199,12 @@ function buildSignatureBlock(identity) {
   const today = new Date();
   const dateStr = today.toLocaleDateString("tr-TR");
   const fullName = identity?.fullName || "…";
-  const tcKimlik = identity?.tcKimlik || "…";
   const address = identity?.address || "…";
   const phone = identity?.phone || "…";
 
   return (
     `Tarih: ${dateStr}\n` +
     `Ad Soyad: ${fullName}\n` +
-    `T.C. Kimlik No: ${tcKimlik}\n` +
     `Adres: ${address}\n` +
     `Telefon: ${phone}\n`
   );
@@ -418,13 +416,10 @@ exports.handler = async (event) => {
     return json(400, { error: "Eksik alanlar var. İl/ilçe/belediye, kategori ve metin zorunlu." });
   }
   if (!ident) {
-    return json(400, { error: "Kimlik bilgileri eksik. Ad Soyad, T.C. Kimlik No, Adres ve Telefon zorunlu." });
-  }
-  if (!/^\d{11}$/.test(ident.tcKimlik)) {
-    return json(400, { error: "T.C. Kimlik No 11 haneli olmalı." });
+    return json(400, { error: "Kimlik bilgileri eksik." });
   }
   if (![ident.fullName, ident.address, ident.phone].every(isNonEmptyString)) {
-    return json(400, { error: "Kimlik bilgileri eksik. Ad Soyad, Adres ve Telefon zorunlu." });
+    return json(400, { error: "Ad Soyad, Adres ve Telefon zorunlu." });
   }
 
   const all = await loadMunicipalities().catch(() => []);

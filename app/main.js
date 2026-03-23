@@ -744,7 +744,6 @@ function validateInputs() {
   const category = categorySelect.value;
   const text = userText.value.trim();
   const name = fullName.value.trim();
-  const tc = tcKimlik.value.trim();
   const addr = address.value.trim();
   const tel = phone.value.trim();
 
@@ -753,13 +752,9 @@ function validateInputs() {
   if (!text) return { ok: false, message: "Lütfen sorununuzu yazın." };
   if (text.length > 2000) return { ok: false, message: "Metin çok uzun (maks. 2000 karakter)." };
   if (!name) return { ok: false, message: "Lütfen Ad Soyad alanını doldurun." };
-  if (!/^\d{11}$/.test(tc)) return { ok: false, message: "T.C. Kimlik No 11 haneli olmalı." };
   if (!tel) return { ok: false, message: "Lütfen Telefon alanını doldurun." };
-  if (!/^[0-9]{10,11}$/.test(tel.replace(/\s/g, ""))) return { ok: false, message: "Telefon numarası 10-11 haneli olmalı." };
   if (!addr) return { ok: false, message: "Lütfen Adres alanını doldurun." };
-  if (addr.length > 400) return { ok: false, message: "Adres çok uzun (maks. 400 karakter)." };
-  if (name.length > 80) return { ok: false, message: "Ad Soyad çok uzun (maks. 80 karakter)." };
-  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: tc, address: addr, phone: tel } };
+  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: "", address: addr, phone: tel } };
 }
 
 function setLoading(isLoading) {
@@ -769,7 +764,6 @@ function setLoading(isLoading) {
   categorySelect.disabled = isLoading;
   userText.disabled = isLoading;
   fullName.disabled = isLoading;
-  tcKimlik.disabled = isLoading;
   address.disabled = isLoading;
   phone.disabled = isLoading;
 }
@@ -794,7 +788,7 @@ citySelect?.addEventListener("change", () => {
 districtSelect?.addEventListener("change", () => {
   setStatus("");
   result?.classList.add("hidden");
-  updateMunicipalityInfo();
+  municipalityInfo?.classList.add("hidden");
 });
 
 userText?.addEventListener("input", updateCharHint);
