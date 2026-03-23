@@ -186,7 +186,12 @@ function categoryBasedChannels({ category, city }) {
     return [`${String(city || "")} Belediyesi (Beyaz Masa): 153`, "TEDAŞ: 186"];
   }
   if (c.includes("çöp") || c.includes("cop") || c.includes("atık") || c.includes("atik")) {
-    return ["Belediye Temizlik Müdürlüğü (ALO 153): 153"];
+    return [
+      `${cityName} Belediyesi Temizlik Müdürlüğü (ALO 153): 153`,
+      "CİMER (Cumhurbaşkanlığı İletişim Merkezi): 150",
+      "Çevre ve Şehircilik İl Müdürlüğü: 444 1 372",
+      "e-Devlet Şikayet Hattı: www.turkiye.gov.tr",
+    ];
   }
   if (c.includes("gürültü") || c.includes("gurultu")) {
     return ["Zabıta (ALO 153): 153", "Jandarma: 156"];

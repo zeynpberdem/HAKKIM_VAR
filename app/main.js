@@ -379,7 +379,7 @@ async function buildPdf() {
     }
 
     doc.save("dilekce.pdf");
-    setStatus("PDF başarıyla indirildi.");
+    setStatus("Hakkım Var'ı kullandığınız için teşekkürler! Dilekçeniz indirildi.");
   } catch (err) {
     setStatus("PDF indirme hatası: " + err.message, "error");
   }
