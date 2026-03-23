@@ -215,9 +215,10 @@ function ensureSignatureBlock(petitionText, identity) {
   const sig = buildSignatureBlock(identity).trim();
   const t = String(petitionText || "").trim();
 
+  const tcValue = identity.tcKimlik || "___________";
   const replaced = t
     .replace(/Ad\s*Soyad\s*:\s*.*$/gim, `Ad Soyad: ${identity.fullName}`)
-    .replace(/T\.?\s*C\.?\s*Kimlik\s*No\s*:\s*.*$/gim, `T.C. Kimlik No: ${identity.tcKimlik}`)
+    .replace(/T\.?\s*C\.?\s*Kimlik\s*No\s*:\s*.*$/gim, `T.C. Kimlik No: ${tcValue}`)
     .replace(/Adres\s*:\s*.*$/gim, `Adres: ${identity.address}`)
     .replace(/Telefon\s*:\s*.*$/gim, `Telefon: ${identity.phone}`)
     .replace(/İmza\s*:\s*.*$/gim, "")
