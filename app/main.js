@@ -19,6 +19,7 @@ const fullName = document.getElementById("fullName");
 const tcKimlik = document.getElementById("tcKimlik");
 const address = document.getElementById("address");
 const phone = document.getElementById("phone");
+const streetInput = document.getElementById("streetInput");
 const charHint = document.getElementById("charHint");
 const form = document.getElementById("complaintForm");
 const btn = document.getElementById("generateBtn");
@@ -88,26 +89,33 @@ async function uploadPhoto(file) {
   return data.url;
 }
 
-// Mahalle autocomplete
+// Mahalle autocomplete (local JSON)
+let neighbourhoodsData = null;
+async function getNeighbourhoodsData() {
+  if (!neighbourhoodsData) {
+    const res = await fetch('./data/neighbourhoods.json');
+    neighbourhoodsData = await res.json();
+  }
+  return neighbourhoodsData;
+}
+
 if (neighbourhood) {
   neighbourhood.addEventListener("input", async () => {
     const q = neighbourhood.value.trim();
     if (!neighbourhoodDropdown) return;
-    if (q.length < 2) { neighbourhoodDropdown.style.display = "none"; return; }
+    if (q.length < 1) { neighbourhoodDropdown.style.display = "none"; return; }
     const city = citySelect?.options[citySelect.selectedIndex]?.text || "";
     try {
-      const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q + " " + city)}&limit=8&lang=tr`);
-      const data = await res.json();
-      const items = (data.features || []).filter(f => {
-        const type = f.properties?.type || "";
-        return ["suburb","quarter","neighbourhood","city_district","district","locality"].includes(type);
-      }).slice(0, 5);
-      if (!items.length) { neighbourhoodDropdown.style.display = "none"; return; }
-      neighbourhoodDropdown.innerHTML = items.map(f => {
-        const name = f.properties.name || "";
-        const city2 = f.properties.city || f.properties.county || "";
-        return `<div class="nb-item" data-lat="${f.geometry.coordinates[1]}" data-lng="${f.geometry.coordinates[0]}" data-name="${name}" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);">${name}${city2 ? ' <span style="color:rgba(255,255,255,0.4);font-size:11px;">— ' + city2 + '</span>' : ''}</div>`;
-      }).join("");
+      const data = await getNeighbourhoodsData();
+      const cityNeighs = data[city] || [];
+      const qLow = q.toLocaleLowerCase('tr-TR');
+      const matches = cityNeighs.filter(n =>
+        n.name.toLocaleLowerCase('tr-TR').includes(qLow)
+      ).slice(0, 8);
+      if (!matches.length) { neighbourhoodDropdown.style.display = "none"; return; }
+      neighbourhoodDropdown.innerHTML = matches.map(n =>
+        `<div class="nb-item" data-lat="${n.lat}" data-lng="${n.lng}" data-name="${n.name}" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);">${n.name}</div>`
+      ).join("");
       neighbourhoodDropdown.style.display = "block";
       for (const el of neighbourhoodDropdown.querySelectorAll(".nb-item")) {
         el.addEventListener("click", () => {
@@ -752,7 +760,12 @@ function validateInputs() {
   if (text.length > 2000) return { ok: false, message: "Metin çok uzun (maks. 2000 karakter)." };
   if (!name) return { ok: false, message: "Lütfen Ad Soyad alanını doldurun." };
   if (!tel) return { ok: false, message: "Lütfen Telefon alanını doldurun." };
-  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: "", address: "", phone: tel } };
+  const mahalle = neighbourhood?.value?.trim() || "";
+  const sokak = streetInput?.value?.trim() || "";
+  const ilce = districtSelect?.options[districtSelect.selectedIndex]?.text?.split(" —")[0] || "";
+  const il = citySelect?.options[citySelect.selectedIndex]?.text || "";
+  const builtAddress = [mahalle, sokak, ilce, il].filter(Boolean).join(", ");
+  return { ok: true, rec, category, text, identity: { fullName: name, tcKimlik: "", address: builtAddress, phone: tel } };
 }
 
 function setLoading(isLoading) {
@@ -814,7 +827,6 @@ const pdfEditTextarea = document.getElementById("pdfEditTextarea");
 const pdfModalClose = document.getElementById("pdfModalClose");
 const pdfModalCancel = document.getElementById("pdfModalCancel");
 const pdfModalDownload = document.getElementById("pdfModalDownload");
-
 pdfBtn?.addEventListener("click", () => {
   if (pdfEditTextarea) pdfEditTextarea.value = petitionText?.textContent || "";
   if (pdfEditModal) pdfEditModal.style.display = "flex";

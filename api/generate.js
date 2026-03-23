@@ -205,6 +205,7 @@ function buildSignatureBlock(identity) {
   return (
     `Tarih: ${dateStr}\n` +
     `Ad Soyad: ${fullName}\n` +
+    `T.C. Kimlik No: ___________\n` +
     `Adres: ${address}\n` +
     `Telefon: ${phone}\n`
   );
