@@ -378,7 +378,15 @@ async function buildPdf() {
       doc.text("İmza: _______________________________", margin, y);
     }
 
-    doc.save("dilekce.pdf");
+    // iOS Safari doc.save() desteklemiyor — blob URL ile aç
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      const blob = doc.output("blob");
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } else {
+      doc.save("dilekce.pdf");
+    }
     setStatus("Hakkım Var'ı kullandığınız için teşekkürler! Dilekçeniz indirildi.");
   } catch (err) {
     setStatus("PDF indirme hatası: " + err.message, "error");
