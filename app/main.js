@@ -43,6 +43,89 @@ const whatsBtn = document.getElementById("whatsBtn");
 const emailBtn = document.getElementById("emailBtn");
 
 let municipalitiesRaw = null;
+let neighbourhoodLat = null;
+let neighbourhoodLng = null;
+
+const neighbourhood = document.getElementById("neighbourhood");
+const neighbourhoodDropdown = document.getElementById("neighbourhoodDropdown");
+
+// Fotoğraf yükleme
+const photoInput = document.getElementById("photoInput");
+const photoPreview = document.getElementById("photoPreview");
+const photoPreviewImg = document.getElementById("photoPreviewImg");
+const photoLabelText = document.getElementById("photoLabelText");
+const photoRemove = document.getElementById("photoRemove");
+
+if (photoInput) {
+  photoInput.addEventListener("change", () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    if (photoLabelText) photoLabelText.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (photoPreviewImg) photoPreviewImg.src = e.target.result;
+      if (photoPreview) photoPreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  });
+  photoRemove?.addEventListener("click", () => {
+    photoInput.value = "";
+    if (photoPreview) photoPreview.style.display = "none";
+    if (photoLabelText) photoLabelText.textContent = "Fotoğraf seç";
+  });
+}
+
+async function uploadPhoto(file) {
+  const ext = file.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": file.type, "x-file-name": fileName },
+    body: file,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error("Fotoğraf yüklenemedi: " + data.error);
+  return data.url;
+}
+
+// Mahalle autocomplete
+if (neighbourhood) {
+  neighbourhood.addEventListener("input", async () => {
+    const q = neighbourhood.value.trim();
+    if (!neighbourhoodDropdown) return;
+    if (q.length < 2) { neighbourhoodDropdown.style.display = "none"; return; }
+    const city = citySelect?.options[citySelect.selectedIndex]?.text || "";
+    try {
+      const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q + " " + city)}&limit=8&lang=tr`);
+      const data = await res.json();
+      const items = (data.features || []).filter(f => {
+        const type = f.properties?.type || "";
+        return ["suburb","quarter","neighbourhood","city_district","district","locality"].includes(type);
+      }).slice(0, 5);
+      if (!items.length) { neighbourhoodDropdown.style.display = "none"; return; }
+      neighbourhoodDropdown.innerHTML = items.map(f => {
+        const name = f.properties.name || "";
+        const city2 = f.properties.city || f.properties.county || "";
+        return `<div class="nb-item" data-lat="${f.geometry.coordinates[1]}" data-lng="${f.geometry.coordinates[0]}" data-name="${name}" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);">${name}${city2 ? ' <span style="color:rgba(255,255,255,0.4);font-size:11px;">— ' + city2 + '</span>' : ''}</div>`;
+      }).join("");
+      neighbourhoodDropdown.style.display = "block";
+      for (const el of neighbourhoodDropdown.querySelectorAll(".nb-item")) {
+        el.addEventListener("click", () => {
+          neighbourhood.value = el.dataset.name;
+          neighbourhoodLat = parseFloat(el.dataset.lat);
+          neighbourhoodLng = parseFloat(el.dataset.lng);
+          neighbourhoodDropdown.style.display = "none";
+        });
+        el.addEventListener("mouseenter", () => el.style.background = "rgba(124,58,237,0.15)");
+        el.addEventListener("mouseleave", () => el.style.background = "");
+      }
+    } catch { neighbourhoodDropdown.style.display = "none"; }
+  });
+  document.addEventListener("click", (e) => {
+    if (!neighbourhood.contains(e.target) && !neighbourhoodDropdown?.contains(e.target))
+      if (neighbourhoodDropdown) neighbourhoodDropdown.style.display = "none";
+  });
+}
 
 function showLanding() {
   if (landingPage) {
@@ -735,12 +818,27 @@ copyPetition?.addEventListener("click", async () => {
   }
 });
 
-pdfBtn?.addEventListener("click", async () => {
-  try {
-    await buildPdf();
-  } catch {
-    setStatus("PDF oluşturma başarısız.", "error");
-  }
+const pdfEditModal = document.getElementById("pdfEditModal");
+const pdfEditTextarea = document.getElementById("pdfEditTextarea");
+const pdfModalClose = document.getElementById("pdfModalClose");
+const pdfModalCancel = document.getElementById("pdfModalCancel");
+const pdfModalDownload = document.getElementById("pdfModalDownload");
+
+pdfBtn?.addEventListener("click", () => {
+  if (pdfEditTextarea) pdfEditTextarea.value = petitionText?.textContent || "";
+  if (pdfEditModal) pdfEditModal.style.display = "flex";
+});
+
+function closePdfModal() {
+  if (pdfEditModal) pdfEditModal.style.display = "none";
+}
+pdfModalClose?.addEventListener("click", closePdfModal);
+pdfModalCancel?.addEventListener("click", closePdfModal);
+pdfEditModal?.addEventListener("click", (e) => { if (e.target === pdfEditModal) closePdfModal(); });
+pdfModalDownload?.addEventListener("click", async () => {
+  if (petitionText && pdfEditTextarea) petitionText.textContent = pdfEditTextarea.value;
+  closePdfModal();
+  try { await buildPdf(); } catch { setStatus("PDF oluşturma başarısız.", "error"); }
 });
 
 startApplication?.addEventListener("click", () => showForm());
@@ -770,6 +868,19 @@ form?.addEventListener("submit", async (e) => {
   setStatus("Hazırlanıyor… (en geç 5 sn)");
 
   try {
+    let imageUrl = null;
+    const photoFile = photoInput?.files?.[0];
+    if (photoFile) {
+      setStatus("Fotoğraf yükleniyor…");
+      try {
+        imageUrl = await uploadPhoto(photoFile);
+      } catch {
+        setStatus("Fotoğraf yüklenemedi, başvuru fotoğrafsız gönderilecek.", "info");
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    }
+
+    setStatus("Hazırlanıyor… (en geç 5 sn)");
     const resp = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -780,6 +891,10 @@ form?.addEventListener("submit", async (e) => {
         category: v.category,
         userText: v.text,
         identity: v.identity,
+        neighbourhood: neighbourhood?.value?.trim() || "",
+        userLat: neighbourhoodLat,
+        userLng: neighbourhoodLng,
+        imageUrl,
       }),
     });
 
@@ -813,7 +928,26 @@ if (testimonials && landingPage) {
 })();
 
 // landing enhancements
-animateCountUp(appCount);
+// Supabase'den gerçek başvuru sayısını çek
+(async () => {
+  try {
+    const res = await fetch(
+      'https://zbmjvadlqnodkazzmbmg.supabase.co/rest/v1/complaints?select=count',
+      {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpibWp2YWRscW5vZGthenptYm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjEwODUsImV4cCI6MjA4OTY5NzA4NX0.6eh4ES6nUGSFbxUJ0Xb1qTltYMKW5n8qvf1o13k8pcM',
+          'Prefer': 'count=exact'
+        }
+      }
+    );
+    const range = res.headers.get('content-range');
+    const count = range ? parseInt(range.split('/')[1]) : null;
+    if (count !== null && appCount) {
+      appCount.dataset.target = count;
+    }
+  } catch {}
+  animateCountUp(appCount);
+})();
 initParticles(particlesCanvas);
 initSpeechRecognition();
 

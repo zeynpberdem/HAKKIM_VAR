@@ -246,6 +246,56 @@ function fallbackPetition({ municipality, city, district, category, identity }) 
   return petition + "Ad Soyad: …\nT.C. Kimlik No: …\nAdres: …\nTelefon: …\n";
 }
 
+async function saveToSupabase({ city, district, category, lat, lng, neighbourhood, imageUrl }) {
+  try {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) return;
+    await fetch(`${supabaseUrl}/rest/v1/complaints`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": supabaseKey,
+        "Authorization": `Bearer ${supabaseKey}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({ city, district, category, lat, lng, neighbourhood, image_url: imageUrl || null })
+    });
+  } catch (e) {
+    console.error("Supabase kayıt hatası:", e);
+  }
+}
+
+async function callClaude({ apiKey, systemPrompt, userPrompt, timeoutMs }) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+      }),
+    });
+    if (!resp.ok) {
+      const errText = await resp.text().catch(() => "");
+      throw new Error(`Claude hata: ${resp.status} ${errText}`.trim());
+    }
+    const data = await resp.json();
+    return (data?.content?.map((b) => b.text).join("") || "").trim();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function callGemini({ apiKey, model, systemPrompt, userPrompt, timeoutMs }) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
     model
@@ -402,9 +452,22 @@ exports.handler = async (event) => {
   const categoryChannels = categoryBasedChannels({ category, city });
   const baseChannels = uniqStrings([...dataChannels, ...categoryChannels, ...municipalityChannels]);
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const neighbourhood = clampText(body.neighbourhood, 100);
+  const imageUrl = body.imageUrl || null;
+
+  await saveToSupabase({
+    city, district, category,
+    lat: body.userLat || belediCityData?.lat || null,
+    lng: body.userLng || belediCityData?.lng || null,
+    neighbourhood,
+    imageUrl,
+  });
+
+  const claudeKey = process.env.ANTHROPIC_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-  if (!isNonEmptyString(apiKey)) {
+
+  if (!isNonEmptyString(claudeKey) && !isNonEmptyString(geminiKey)) {
     return json(200, {
       channels: baseChannels,
       petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
@@ -460,13 +523,25 @@ exports.handler = async (event) => {
     `Telefon: ${ident.phone}\n`;
 
   try {
-    const llmText = await callGemini({
-      apiKey,
-      model,
-      systemPrompt,
-      userPrompt,
-      timeoutMs: 9000,
-    });
+    let llmText, mode;
+
+    if (isNonEmptyString(claudeKey)) {
+      try {
+        llmText = await callClaude({ apiKey: claudeKey, systemPrompt, userPrompt, timeoutMs: 20000 });
+        mode = "claude";
+      } catch (claudeErr) {
+        console.warn("Claude hata, Gemini'ye geçiliyor:", claudeErr?.message);
+        if (isNonEmptyString(geminiKey)) {
+          llmText = await callGemini({ apiKey: geminiKey, model, systemPrompt, userPrompt, timeoutMs: 9000 });
+          mode = "gemini";
+        } else {
+          throw claudeErr;
+        }
+      }
+    } else {
+      llmText = await callGemini({ apiKey: geminiKey, model, systemPrompt, userPrompt, timeoutMs: 9000 });
+      mode = "gemini";
+    }
 
     const parsed = parseTwoPartOutput(llmText);
     const channels = uniqStrings([...dataChannels, ...(parsed.channels || [])]);
@@ -475,16 +550,13 @@ exports.handler = async (event) => {
       fallbackPetition({ municipality, city, district, category, identity: ident });
     const petition = ensureSignatureBlock(petitionRaw, ident);
 
-    return json(200, {
-      channels,
-      petitionText: petition,
-      meta: { mode: "gemini" },
-    });
-  } catch {
+    return json(200, { channels, petitionText: petition, meta: { mode } });
+  } catch (err) {
+    console.error("LLM error:", err?.message || err);
     return json(200, {
       channels: uniqStrings([...dataChannels, ...baseChannels]),
       petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
-      meta: { mode: "fallback_llm_error" },
+      meta: { mode: "fallback_llm_error", error: err?.message || String(err) },
     });
   }
 };

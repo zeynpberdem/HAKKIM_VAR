@@ -27,6 +27,17 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .row3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
 .row2 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
 .row1 { margin-bottom: 1rem; }
+.photo-label {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.04); border: 1px dashed rgba(109,40,217,0.4);
+  border-radius: 8px; padding: 0.65rem 0.9rem; cursor: pointer;
+  font-size: 13px; color: rgba(255,255,255,0.5); width: 100%; box-sizing: border-box;
+}
+.photo-label:hover { border-color: #a78bfa; color: white; }
+@media (max-width: 600px) {
+  .row3, .row2 { grid-template-columns: 1fr; }
+  .form-wrap { margin: 1rem auto; padding: 0 1rem; }
+}
 
 .field label { display: block; font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem; letter-spacing: 0.5px; text-transform: uppercase; }
 .field select, .field input, .field textarea {
@@ -141,24 +152,49 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
         <div class="char-count"><span id="charHint">0</span> <span id="cc" style="display:none"></span></div>
       </div>
 
-      <div class="row2">
+      <div class="row2" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:1rem;">
         <div class="field">
           <label>Ad Soyad</label>
           <input id="fullName" type="text" placeholder="Örn: Zeynep Yılmaz" required pattern="[A-Za-zğüşıöçĞÜŞİÖÇ\s]+" oninput="this.value=this.value.replace(/[0-9]/g,'')">
         </div>
         <div class="field">
+          <label>Telefon</label>
+          <input type="text" id="phone" placeholder="5xx xxx xx xx" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/^0+/,'')">
+        </div>
+        <div class="field">
+          <label>Fotoğraf (isteğe bağlı)</label>
+          <label class="photo-label" for="photoInput">
+            <span id="photoLabelText">Fotoğraf seç</span>
+          </label>
+          <input id="photoInput" type="file" accept="image/*" style="display:none">
+          <div id="photoPreview" style="display:none;margin-top:6px;position:relative;">
+            <img id="photoPreviewImg" style="max-width:100%;max-height:80px;border-radius:6px;">
+            <button id="photoRemove" type="button" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row2" style="grid-template-columns:1fr 1fr;margin-bottom:1rem;">
+        <div class="field" style="position:relative;">
+          <label>Mahalle / Semt</label>
+          <input id="neighbourhood" type="text" placeholder="Mahalle adı yazın..." autocomplete="off">
+          <div id="neighbourhoodDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1a1133;border:1px solid rgba(124,58,237,0.4);border-radius:8px;z-index:999;max-height:180px;overflow-y:auto;"></div>
+        </div>
+        <div class="field">
+          <label>Sokak / No</label>
+          <input id="streetInput" type="text" placeholder="Örn: Fidanlı Sokak No:5">
+        </div>
+      </div>
+
+      <div class="row2" style="grid-template-columns:1fr 1fr;margin-bottom:1rem;">
+        <div class="field">
           <label>T.C. Kimlik No</label>
           <input id="tcKimlik" type="text" placeholder="11 haneli" maxlength="11" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
         </div>
         <div class="field">
-          <label>Telefon</label>
-          <input type="text" id="phone" placeholder="5xx xxx xx xx" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/^0+/,'')">
+          <label>Adres</label>
+          <input id="address" type="text" placeholder="Mahalle, sokak, no, il/ilçe" required>
         </div>
-      </div>
-
-      <div class="row1 field">
-        <label>Adres</label>
-        <textarea id="address" rows="2" placeholder="Mahalle, sokak, no, il/ilçe" style="height:70px" required></textarea>
       </div>
 
       <div class="submit-wrap">
@@ -213,6 +249,23 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     </form>
   </div>
 </div>
+
+<!-- PDF Düzenleme Modali -->
+<div id="pdfEditModal" class="pdf-modal-overlay" style="display:none;">
+  <div class="pdf-modal">
+    <div class="pdf-modal-header">
+      <span class="pdf-modal-title">✏️ Dilekçeyi Düzenle</span>
+      <button id="pdfModalClose" class="pdf-modal-close" type="button">✕</button>
+    </div>
+    <p class="pdf-modal-hint">İndirmeden önce dilekçeyi düzenleyebilirsiniz.</p>
+    <textarea id="pdfEditTextarea" class="pdf-modal-textarea" spellcheck="false"></textarea>
+    <div class="pdf-modal-actions">
+      <button id="pdfModalCancel" class="ghost" type="button">İptal</button>
+      <button id="pdfModalDownload" class="cta-btn" type="button">⬇ PDF İndir</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script type="module" src="./main.js"></script>
