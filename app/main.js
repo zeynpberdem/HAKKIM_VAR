@@ -678,6 +678,7 @@ function renderResult(payload) {
 
   result.classList.remove("hidden");
   pdfBtn?.classList.remove("hidden");
+  updateMunicipalityInfo();
   result.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
