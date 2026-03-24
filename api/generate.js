@@ -179,12 +179,18 @@ function categoryBasedChannels({ category, city }) {
   ];
 
   if (c.includes("elektrik")) {
+    const elektrikSirketi = {
+      "Elazığ":    "MEKE (Medaş) Elazığ Elektrik Dağıtım A.Ş. Arıza Hattı: 186 | https://www.medas.com.tr",
+      "Malatya":   "MEKE Malatya Elektrik Dağıtım A.Ş. Arıza Hattı: 186 | https://www.medas.com.tr",
+      "Erzincan":  "MEKE Erzincan Elektrik Dağıtım A.Ş. Arıza Hattı: 186 | https://www.medas.com.tr",
+      "Tunceli":   "MEKE Tunceli Elektrik Dağıtım A.Ş. Arıza Hattı: 186 | https://www.medas.com.tr",
+      "Diyarbakır":"Dicle EDAŞ (Dicle Elektrik Dağıtım A.Ş.) Arıza Hattı: 186 | https://www.dicle.com.tr",
+    };
     return [
-      "TEDAŞ (Elektrik Arıza Hattı): 186",
-      cityName === "Elazığ"
-        ? "EPDK/MEKE Elazığ Elektrik Dağıtım: 186"
-        : "Yerel Elektrik Dağıtım Şirketi: 186",
-      "EPDK (Enerji Piyasası Düzenleme Kurumu): 444 3 752 | https://www.epdk.gov.tr",
+      "TEDAŞ Elektrik Arıza / Şikayet Hattı: 186",
+      elektrikSirketi[cityName] || "Yerel Elektrik Dağıtım Şirketi Arıza Hattı: 186",
+      "EPDK (Enerji Piyasası Düzenleme Kurumu) Tüketici Şikayetleri: 444 3 752 | https://www.epdk.gov.tr",
+      "ALO Elektrik (7/24 arıza): 186",
       ...common,
     ];
   }
