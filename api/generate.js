@@ -456,7 +456,7 @@ function parseTwoPartOutput(llmText) {
   return parts;
 }
 
-exports.handler = async (event) => {
+const netlifyHandler = async (event) => {
   if (event.httpMethod !== "POST") {
     return json(405, { error: "Method not allowed" });
   }
@@ -629,4 +629,22 @@ exports.handler = async (event) => {
       meta: { mode: "fallback_llm_error", error: err?.message || String(err) },
     });
   }
+};
+
+// Vercel adapter
+module.exports = async (req, res) => {
+  const event = {
+    httpMethod: req.method,
+    headers: req.headers,
+    body: typeof req.body === "object" ? JSON.stringify(req.body) : (req.body || "{}"),
+    isBase64Encoded: false,
+  };
+  const result = await netlifyHandler(event);
+  res.status(result.statusCode);
+  if (result.headers) {
+    Object.entries(result.headers).forEach(([k, v]) => res.setHeader(k, v));
+  }
+  res.end(result.body);
+};
+module.exports.handler = netlifyHandler;
 };
