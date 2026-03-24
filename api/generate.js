@@ -10,14 +10,14 @@ function now() {
   return Date.now();
 }
 
-function getClientIp(event) {
-  const h = event.headers || {};
+function getClientIp(req) {
+  const h = req.headers || {};
   const xff = h["x-forwarded-for"] || h["X-Forwarded-For"];
   if (xff) return String(xff).split(",")[0].trim();
   return (
     h["x-real-ip"] ||
     h["X-Real-IP"] ||
-    event?.requestContext?.identity?.sourceIp ||
+    req.socket?.remoteAddress ||
     "unknown"
   );
 }
@@ -34,15 +34,8 @@ function rateLimit(ip) {
   return { ok: true };
 }
 
-function json(statusCode, body) {
-  return {
-    statusCode,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-    },
-    body: JSON.stringify(body),
-  };
+function makeJson(statusCode, body) {
+  return { statusCode, body };
 }
 
 function isNonEmptyString(x) {
@@ -333,20 +326,26 @@ function parseTwoPartOutput(llmText) {
   return parts;
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return json(405, { error: "Method not allowed" });
+module.exports = async (req, res) => {
+  const sendJson = (statusCode, body) => {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Cache-Control", "no-store");
+    res.status(statusCode).json(body);
+  };
+
+  if (req.method !== "POST") {
+    return sendJson(405, { error: "Method not allowed" });
   }
 
-  const ip = getClientIp(event);
+  const ip = getClientIp(req);
   const rl = rateLimit(ip);
-  if (!rl.ok) return json(429, { error: "Çok fazla istek. Lütfen biraz sonra tekrar deneyin." });
+  if (!rl.ok) return sendJson(429, { error: "Çok fazla istek. Lütfen biraz sonra tekrar deneyin." });
 
   let body;
   try {
-    body = JSON.parse(event.body || "{}");
+    body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
   } catch {
-    return json(400, { error: "Geçersiz JSON." });
+    return sendJson(400, { error: "Geçersiz JSON." });
   }
 
   const city = clampText(body.city, 80);
@@ -365,16 +364,16 @@ exports.handler = async (event) => {
     : null;
 
   if (![city, district, municipality, category, userText].every(isNonEmptyString)) {
-    return json(400, { error: "Eksik alanlar var. İl/ilçe/belediye, kategori ve metin zorunlu." });
+    return sendJson(400, { error: "Eksik alanlar var. İl/ilçe/belediye, kategori ve metin zorunlu." });
   }
   if (!ident) {
-    return json(400, { error: "Kimlik bilgileri eksik. Ad Soyad, T.C. Kimlik No, Adres ve Telefon zorunlu." });
+    return sendJson(400, { error: "Kimlik bilgileri eksik. Ad Soyad, T.C. Kimlik No, Adres ve Telefon zorunlu." });
   }
   if (!/^\d{11}$/.test(ident.tcKimlik)) {
-    return json(400, { error: "T.C. Kimlik No 11 haneli olmalı." });
+    return sendJson(400, { error: "T.C. Kimlik No 11 haneli olmalı." });
   }
   if (![ident.fullName, ident.address, ident.phone].every(isNonEmptyString)) {
-    return json(400, { error: "Kimlik bilgileri eksik. Ad Soyad, Adres ve Telefon zorunlu." });
+    return sendJson(400, { error: "Kimlik bilgileri eksik. Ad Soyad, Adres ve Telefon zorunlu." });
   }
 
   const all = await loadMunicipalities().catch(() => []);
@@ -393,7 +392,7 @@ exports.handler = async (event) => {
     null;
   const contact = { ...schema, ...(override || {}) };
   const municipalityName = municipality || getMunicipalityName(city, district);
-  
+
   const bData = await loadBelediyelerInfo();
   const belediCityData = bData[city] || bData[titleTrCity(city)] || null;
   const dataChannels = formatBelediyeChannels(belediCityData);
@@ -405,7 +404,7 @@ exports.handler = async (event) => {
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   if (!isNonEmptyString(apiKey)) {
-    return json(200, {
+    return sendJson(200, {
       channels: baseChannels,
       petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
       meta: { mode: "fallback_no_key" },
@@ -475,13 +474,13 @@ exports.handler = async (event) => {
       fallbackPetition({ municipality, city, district, category, identity: ident });
     const petition = ensureSignatureBlock(petitionRaw, ident);
 
-    return json(200, {
+    return sendJson(200, {
       channels,
       petitionText: petition,
       meta: { mode: "gemini" },
     });
   } catch {
-    return json(200, {
+    return sendJson(200, {
       channels: uniqStrings([...dataChannels, ...baseChannels]),
       petitionText: fallbackPetition({ municipality, city, district, category, identity: ident }),
       meta: { mode: "fallback_llm_error" },
