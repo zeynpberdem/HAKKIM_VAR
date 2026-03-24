@@ -169,13 +169,25 @@ function categoryBasedChannels({ category, city }) {
   const c = normalizeCategory(category);
   const cityName = String(city || "").trim();
 
+  // Şehre göre belediye iletişim bilgileri
+  const belSiteler = {
+    "Elazığ":    { site: "https://www.elazig.bel.tr/iletisim/", email: "elazig@elazig.bel.tr", wp: "05432323153" },
+    "Diyarbakır":{ site: "https://www.diyarbakir.bel.tr/iletisim.html", email: "diyarbakirbb@hs03.kep.tr", wp: "04121530000" },
+    "Malatya":   { site: "https://www.malatya.bel.tr/iletisim", email: "info@malatya.bel.tr", wp: "05304654444" },
+    "Erzincan":  { site: "https://www.erzincan.bel.tr", email: "info@erzincan.bel.tr", wp: "05326969024" },
+    "Tunceli":   { site: "https://tunceli.bel.tr/iletisim", email: "info@tunceli.bel.tr", wp: "04282121327" },
+  };
+  const bel = belSiteler[cityName] || {};
+
   // Her kategoride ortak kanallar
   const common = [
+    ...(bel.site   ? [`${cityName} Belediyesi Resmi Web Sitesi: ${bel.site}`] : []),
+    ...(bel.email  ? [`${cityName} Belediyesi E-posta: ${bel.email} (mailto:${bel.email})`] : []),
+    ...(bel.wp     ? [`${cityName} Belediyesi WhatsApp: (https://wa.me/90${bel.wp.replace(/^0/, "")})`] : []),
+    `${cityName} Belediyesi Beyaz Masa: 153`,
     "CİMER (Cumhurbaşkanlığı İletişim Merkezi): 150 | https://www.cimer.gov.tr",
     "BİMER (Başbakanlık İletişim Merkezi): 150 | https://www.bimer.gov.tr",
     "e-Devlet Şikayet / Başvuru: https://www.turkiye.gov.tr",
-    `${cityName} Belediyesi Beyaz Masa: 153`,
-    `${cityName} Belediyesi E-posta: iletisim@${cityName.toLocaleLowerCase("tr-TR").replace(/\s/g, "")}bel.tr`,
   ];
 
   if (c.includes("elektrik")) {
