@@ -275,15 +275,28 @@ select:focus, input:focus, textarea:focus{
 .channelsList { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .channelsList li { margin-bottom: 0; padding: 0; }
 .channel-card {
-  display: block; padding: 1rem; border-radius: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1rem; border-radius: 10px;
   background: rgba(255,255,255,0.03); border: 1px solid rgba(124,58,237,0.4);
   color: white; text-decoration: none; transition: all 0.2s;
-  font-size: 14px;
+  font-size: 14px; cursor: pointer; position: relative;
+}
+a.channel-card::after {
+  content: "→ Tıkla";
+  font-size: 11px;
+  color: #a78bfa;
+  white-space: nowrap;
+  margin-left: 10px;
+  opacity: 0.85;
+  flex-shrink: 0;
 }
 .channel-card:hover {
-  background: rgba(124,58,237,0.1); border-color: #a78bfa;
+  background: rgba(124,58,237,0.15); border-color: #a78bfa;
   box-shadow: 0 0 15px rgba(124,58,237,0.4);
   transform: translateY(-2px);
+}
+a.channel-card:hover::after {
+  opacity: 1;
 }
 
 .petitionBox{
