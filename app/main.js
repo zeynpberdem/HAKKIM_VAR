@@ -634,43 +634,51 @@ function renderResult(payload) {
       const li = document.createElement("li");
       let href = "";
       let isWeb = false;
+      let label = "";
 
-      const webMatch = ch.match(/(https?:\/\/[^\s\)]+|www\.[^\s\)]+|[a-zA-Z0-9.-]+\.(gov\.tr|bel\.tr|com|net|org))/i);
-      const mailto_match = ch.match(/mailto:[^\s\)]+/i);
-      const phoneMatch = ch.match(/(?:tel:([^\s\)]+))|(\+?90\s?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}|\b1\d{2}\b/i);
+      // E-posta: doğrudan @ içeren adres veya mailto: formatı
+      const emailAddrMatch = ch.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
+      const mailtoMatch = ch.match(/mailto:[^\s\)\|]+/i);
+      const webMatch = ch.match(/(https?:\/\/[^\s\)\|]+|www\.[^\s\)\|]+)/i);
+      const phoneMatch = ch.match(/(?:\b\d{3,4}\s?\d{3}\s?\d{2}\s?\d{2}\b|\b\d{3}\b|\+90\s?\d{3}\s?\d{3}\s?\d{4})/);
 
-      if (mailto_match) {
-        href = mailto_match[0];
-        isWeb = false;
+      if (mailtoMatch) {
+        href = mailtoMatch[0];
+        label = "✉️ Mail Gönder";
+      } else if (emailAddrMatch) {
+        href = "mailto:" + emailAddrMatch[0];
+        label = "✉️ Mail Gönder";
       } else if (webMatch) {
         href = webMatch[0];
-        if (!href.startsWith("http")) href = "http://" + href;
+        if (!href.startsWith("http")) href = "https://" + href;
         isWeb = true;
+        label = "🌐 Siteye Git";
       } else if (phoneMatch) {
-        if (phoneMatch[1]) {
-          href = "tel:" + phoneMatch[1].replace(/[^\d+]/g, "");
-        } else {
-          const digits = phoneMatch[0].replace(/[^\d+]/g, "");
-          href = "tel:" + digits;
-        }
+        const digits = phoneMatch[0].replace(/[^\d+]/g, "");
+        href = "tel:" + digits;
+        label = "📞 Ara";
       }
 
+      const el = href ? document.createElement("a") : document.createElement("div");
+      el.className = "channel-card";
       if (href) {
-        const a = document.createElement("a");
-        a.href = href;
-        a.className = "channel-card";
-        if (isWeb) {
-          a.target = "_blank";
-          a.rel = "noreferrer";
-        }
-        a.textContent = ch;
-        li.appendChild(a);
-      } else {
-        const div = document.createElement("div");
-        div.className = "channel-card";
-        div.textContent = ch;
-        li.appendChild(div);
+        el.href = href;
+        if (isWeb) { el.target = "_blank"; el.rel = "noreferrer"; }
       }
+
+      // Kart içeriği: metin + sağda etiket
+      const textSpan = document.createElement("span");
+      textSpan.textContent = ch;
+      el.appendChild(textSpan);
+
+      if (label) {
+        const badge = document.createElement("span");
+        badge.className = "channel-badge";
+        badge.textContent = label;
+        el.appendChild(badge);
+      }
+
+      li.appendChild(el);
       
       channelsList.appendChild(li);
     }

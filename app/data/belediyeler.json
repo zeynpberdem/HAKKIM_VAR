@@ -32,8 +32,8 @@
   "Erzincan": {
     "website": "https://www.erzincan.bel.tr",
     "telefon": "444 9 024",
-    "whatsapp": null,
-    "email": null,
+    "whatsapp": "05326969024",
+    "email": "info@erzincan.bel.tr",
     "cimer": "https://cimer.iletisim.gov.tr",
     "edevlet": "https://www.turkiye.gov.tr/erzincan-belediyesi",
     "lat": 39.748577,
@@ -42,7 +42,7 @@
   "Tunceli": {
     "website": "https://tunceli.bel.tr/iletisim",
     "telefon": "+90 428 212 13 27",
-    "whatsapp": null,
+    "whatsapp": "04282121327",
     "email": "info@tunceli.bel.tr",
     "cimer": "https://cimer.iletisim.gov.tr",
     "edevlet": "https://www.turkiye.gov.tr/tunceli-belediyesi",
