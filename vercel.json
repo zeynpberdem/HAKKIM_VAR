@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "app",
+  "rewrites": [
+    { "source": "/api/generate", "destination": "/api/generate" },
+    { "source": "/api/upload", "destination": "/api/upload" }
+  ]
+}
