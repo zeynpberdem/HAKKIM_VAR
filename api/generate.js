@@ -647,4 +647,3 @@ module.exports = async (req, res) => {
   res.end(result.body);
 };
 module.exports.handler = netlifyHandler;
-};
