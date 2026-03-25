@@ -832,48 +832,71 @@ window.addEventListener("DOMContentLoaded", () => {
 let leafletMap = null;
 let leafletMarker = null;
 
+async function geocodeDistrict(district, city) {
+  try {
+    const q = encodeURIComponent(`${district}, ${city}, Türkiye`);
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=0`, {
+      headers: { 'Accept-Language': 'tr' }
+    });
+    if (!res.ok) return null;
+    const results = await res.json();
+    if (results.length > 0) {
+      return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) };
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
 async function updateMap(cityName, municipalityName) {
   try {
     const res = await fetch('./data/belediyeler.json');
     if (!res.ok) return;
     const data = await res.json();
-    
+
     const cName = Object.keys(data).find(k => k.toLocaleLowerCase('tr-TR') === cityName.toLocaleLowerCase('tr-TR')) || cityName;
     const info = data[cName];
-    console.log("cityName:", cityName);
-console.log("cName:", cName);
-console.log("info:", info);
-console.log("data keys:", Object.keys(data));
-    
+
     const mapDiv = document.getElementById('map');
     if (!mapDiv) return;
 
     if (info && info.lat && info.lng) {
       mapDiv.style.display = 'block';
-      const lat = info.lat;
-      const lng = info.lng;
+
+      // İlçe adını municipalityName'den çıkar ("Kovancılar Belediyesi" → "Kovancılar")
+      const districtName = municipalityName.replace(/\s*Belediyesi$/i, '').trim();
+      const isMerkez = districtName.toLocaleLowerCase('tr-TR') === cityName.toLocaleLowerCase('tr-TR');
+
+      let lat = info.lat;
+      let lng = info.lng;
+
+      // Merkez dışı ilçelerde Nominatim ile doğru koordinatı bul
+      if (!isMerkez) {
+        const coords = await geocodeDistrict(districtName, cityName);
+        if (coords) { lat = coords.lat; lng = coords.lng; }
+      }
 
       if (!leafletMap) {
-        leafletMap = L.map('map').setView([lat, lng], 17);
+        leafletMap = L.map('map').setView([lat, lng], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
         leafletMarker = L.marker([lat, lng]).addTo(leafletMap);
       } else {
-        leafletMap.setView([lat, lng], 17);
+        leafletMap.setView([lat, lng], 14);
         leafletMarker.setLatLng([lat, lng]);
       }
-      
-      leafletMarker.bindPopup(`<b>${cityName} Belediyesi</b>`).openPopup();
+
+      leafletMarker.bindPopup(`<b>${municipalityName}</b><br><small>${cityName}</small>`).openPopup();
       setTimeout(() => leafletMap.invalidateSize(), 50);
+
       const existing = document.getElementById('gmapsBtn');
-if (existing) existing.remove();
-const gmBtn = document.createElement('a');
-gmBtn.id = 'gmapsBtn';
-gmBtn.href = `https://www.google.com/maps?q=${lat},${lng}`;
-gmBtn.target = '_blank';
-gmBtn.rel = 'noreferrer';
-gmBtn.style.cssText = 'display:block;margin-top:8px;text-align:center;font-size:12px;color:#a78bfa;text-decoration:none;';
-gmBtn.textContent = "📍 Google Maps'te Aç";
-document.getElementById('map').after(gmBtn);
+      if (existing) existing.remove();
+      const gmBtn = document.createElement('a');
+      gmBtn.id = 'gmapsBtn';
+      gmBtn.href = `https://www.google.com/maps?q=${lat},${lng}`;
+      gmBtn.target = '_blank';
+      gmBtn.rel = 'noreferrer';
+      gmBtn.style.cssText = 'display:block;margin-top:8px;text-align:center;font-size:12px;color:#a78bfa;text-decoration:none;';
+      gmBtn.textContent = "📍 Google Maps'te Aç";
+      document.getElementById('map').after(gmBtn);
     } else {
       mapDiv.style.display = 'none';
     }
