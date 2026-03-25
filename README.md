@@ -39,6 +39,22 @@ Türkiye'de milyonlarca vatandaş belediye sorunlarını (bozuk yol, su kesintis
 - **Claude Code** — Terminal tabanlı AI kod asistanı
 - **Cursor** — Iterasyon ve hata düzeltme
 - **Gemini** — Fikir üretimi, PRD ve dokümantasyon
+- 
+- ## 📊 Kullanıcı Testleri ve Başarı Verileri
+
+"Hakkım Var" projemizi geliştirirken 20 farklı kullanıcıdan aldığımız geri bildirimler, çözümümüzün gerçek bir ihtiyaca hitap ettiğini kanıtlıyor:
+
+### 🚀 Temel Başarı Metrikleri
+* **Süreç Hızlandırma:** Kullanıcılarımızın **%75'i** dilekçe yazma sürecinde **%90'dan fazla zaman kazandığını** belirtti.
+* **Hukuki Kalite:** Yapay zekanın oluşturduğu dilekçe dili, katılımcıların **%90'ı** tarafından "Profesyonel ve başarılı" bulundu.
+* **Kullanılabilirlik:** Teknolojik çekincesi olan (yaşlılar vb.) birinin tek başına kullanabileceğine inananların oranı **%90.**
+
+### 📈 Detaylı Analiz Grafikleri
+| Süreç Kolaylığı | Hukuki Dil Kalitesi | Zaman Kazancı |
+| :---: | :---: | :---: |
+| ![Kolaylık](./Kullanıcı%20Geri%20Bildirim%20Formu/soru6.png) | ![Kalite](./Kullanıcı%20Geri%20Bildirim%20Formu/soru5.png) | ![Zaman](./Kullanıcı%20Geri%20Bildirim%20Formu/soru4.png) |
+
+> **"Değerli emekleriniz ve duyarlılığınız için teşekkür ederiz."** - Kullanıcı Geri Bildirimi
 ## 📁 Proje Yapısı
 ```
 app/      → Frontend (HTML/CSS/JS)
