@@ -20,7 +20,7 @@ AI, bu metni anlayarak:
 - Kullanıcının girdisini resmi dilekçe diliyle **hazır bir dilekçe metni** olarak üretiyor.  
 Kullanıcı, sadece birkaç dakikada,  
 - **Nereye** ve **hangi kanallarla** başvuru yapması gerektiğini,  
-- **Ne yazması** gerektiğini (örnek dilenmek),  
+- **Ne yazması** gerektiğini (örnek dilekçe),  
 öğrenmiş oluyor ve bu metni kullanarak belediye veya ilgili kuruma başvurabiliyor.
 ## Rakip Durum
 - Belediyelerin kendi web siteleri ve mobil uygulamaları, şehir–şehir değişiyor ve kullanımı karmaşık.  
