@@ -40,7 +40,8 @@ Türkiye'de milyonlarca vatandaş belediye sorunlarını (bozuk yol, su kesintis
 - **Claude Code** — Terminal tabanlı AI kod asistanı
 - **Cursor** — Iterasyon ve hata düzeltme
 - **Gemini** — Fikir üretimi, PRD ve dokümantasyon
-- 
+- perplexity.ai
+  
 - ## 📊 Kullanıcı Testleri ve Başarı Verileri
 
 "Hakkım Var" projemizi geliştirirken 20 farklı kullanıcıdan aldığımız geri bildirimler, çözümümüzün gerçek bir ihtiyaca hitap ettiğini kanıtlıyor:
