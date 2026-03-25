@@ -1,36 +1,54 @@
-# Hakkım Var (MVP)
+# 🏛️ Hakkım Var
+> **AI Destekli Vatandaş Hakları Platformu**  
+> Hakkını ara, doğru yere ilet.
 
-Türkiye'deki yerel yönetim bürokrasisini vatandaş için daha şeffaf ve erişilebilir kılmayı hedefleyen, AI destekli şikayet/dilekçe üretim aracı.
+## 🌍 Canlı Demo
+🔗 **Yayın Linki:** https://hakkim-var.vercel.app  
+🎥 **Demo Video:** [BURAYA LOOM LİNKİNİ YAZ]
 
-## Özellikler (PRD v1.0)
-- İl / ilçe-belediye seçimi (dinamik)
-- Sorun kategorisi seçimi
-- Kullanıcı metnini resmi dilekçe diline çevirme
-- Seçilen belediyeye ait başvuru kanallarını gösterme
-- Tek tıkla kopyalama
+## 💡 Problem
+Türkiye'de milyonlarca vatandaş belediye sorunlarını (bozuk yol, su kesintisi, sokak lambası vb.) bildirmek istese de **nereye başvuracağını bilemiyor**, resmi dil bilmiyor ve doğru kuruma ulaşamıyor. Bu durum vatandaşın hakkını kullanamamasına yol açıyor.
 
-## Proje Yapısı
-- `app/`: Statik frontend (HTML/CSS/JS)
-- `api/`: Serverless function (Netlify uyumlu)
-- `data/`: Belediye iletişim verisi (JSON)
+## ✅ Çözüm
+**Hakkım Var**, vatandaşın sorununu kendi cümleleriyle anlatmasını sağlar. Yapay zeka bu metni resmi dilekçeye dönüştürür, doğru kurumu ve iletişim kanallarını gösterir. Tek tıkla kopyala,düzenle ve gönder.
 
-## Lokal Çalıştırma
-Bu repo statik bir frontend içerir. En kolay yerel çalışma:
+## 🤖 AI Nasıl Kullanılıyor?
+- Kullanıcının kaba metnini → **resmi dilekçe diline** çevirir (Gemini API)
+- Seçilen il/ilçeye göre → **doğru belediye bilgisi** otomatik gösterilir
+- İletişim kanalları (telefon, WhatsApp, web sitesi) → kod içinde tanımlı statik veri yapısından otomatik çekilir.
 
-1) Bir statik sunucu ile `app/` klasörünü servis edin  
-Örn: VSCode “Live Server” eklentisiyle `app/index.html` açın.
+## ✨ Özellikler
+- 🗺️ **Şikayet Haritası** — Türkiye genelinde şikayetlerin yoğunluk haritası
+- 📄 **AI Dilekçe Üretici** — Kendi cümlelerinle yaz, AI resmi dile çevirsin
+- 🏘️ **Dinamik Mahalle Seçimi** — İl seçildiğinde ilçe ve mahalleler otomatik listelenir
+- 📞 **Kanal Rehberi** — Seçilen ile göre belediye telefonu, WhatsApp ve web sitesi otomatik listelenir
+- 📸 **Kanıt Fotoğrafı** — Başvuruya kanıt fotoğrafı ekle
+- 📥 **PDF İndir / Kopyala** — Dilekçeyi anında kullan
+- 🗄️ **Gerçek Veritabanı** — 42+ gerçek başvuru, 5 şehir desteği.
 
-2) Serverless fonksiyonu yerelde çalıştırmak için Netlify CLI önerilir:
-- Netlify CLI kurun ve çalıştırın:
-  - `netlify dev`
+## 🛠️ Kullanılan Teknolojiler
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Netlify Serverless Functions
+- **AI:** Gemini API (Google)
+- **Veritabanı:** JSON tabanlı belediye veri seti
+- **Harita:** Leaflet.js + OpenStreetMap
+- **Deploy:** Vercel
 
-> Not: Bu projede LLM anahtarı frontend'de **asla** kullanılmaz; sadece serverless function içinde kullanılır.
+## 📁 Proje Yapısı
+```
+app/      → Frontend (HTML/CSS/JS)
+api/      → Serverless functions
+data/     → Belediye iletişim verisi (JSON)
+```
 
-## Ortam Değişkenleri
-`.env.example` dosyasını `.env` olarak kopyalayıp değerleri girin.
+## ⚙️ Lokal Çalıştırma
+```bash
+# 1. Repoyu klonla
+git clone https://github.com/KULLANICI_ADIN/REPO_ADIN.git
 
-## Deploy
-Netlify önerilir:
-- Static publish directory: `app`
-- Functions directory: `api`
+# 2. .env dosyasını oluştur
+cp .env.example .env
+# .env içine API anahtarını gir
 
+# 3. Netlify CLI ile çalıştır
+netlify dev
