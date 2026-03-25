@@ -4,8 +4,8 @@
 
 ## 🌍 Canlı Demo
 🔗 **Yayın Linki:** https://hakkim-var.vercel.app  
-🎥 **Demo Video:** [BURAYA LOOM LİNKİNİ YAZ]
-🔗 Test Sürecimiz: Kullanıcılara uyguladığımız anketin orijinal haline buradan https://forms.gle/YazgvT4PJFHpqiBV9 ulaşabilirsiniz.
+🎥 **Demo Video:** [BURAYA LOOM LİNKİNİ YAZ]         
+      🔗 Test Sürecimiz: Kullanıcılara uyguladığımız anketin orijinal haline buradan https://forms.gle/YazgvT4PJFHpqiBV9 ulaşabilirsiniz.
 
 ## 💡 Problem
 Türkiye'de milyonlarca vatandaş belediye sorunlarını (bozuk yol, su kesintisi, sokak lambası vb.) bildirmek istese de **nereye başvuracağını bilemiyor**, resmi dil bilmiyor ve doğru kuruma ulaşamıyor. Bu durum vatandaşın hakkını kullanamamasına yol açıyor.
