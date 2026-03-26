@@ -885,7 +885,7 @@ async function updateMap(cityName, municipalityName) {
       }
 
       leafletMarker.bindPopup(`<b>${municipalityName}</b><br><small>${cityName}</small>`).openPopup();
-      setTimeout(() => leafletMap.invalidateSize(), 50);
+      setTimeout(() => { leafletMap.invalidateSize(); leafletMarker.openPopup(); }, 300);
 
       const existing = document.getElementById('gmapsBtn');
       if (existing) existing.remove();
