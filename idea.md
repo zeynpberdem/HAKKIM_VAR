@@ -13,7 +13,8 @@ Sistemi bilenler kanallardan yararlanırken, bilmeyenler sessiz kalıyor veya ya
 Kullanıcı:  
 1. Şehir ve belediyesini seçiyor,  
 2. Sorunun kategorisini seçiyor (örneğin: kaldırım, sokak lambası, su kesintisi, elektrik kesintisi, doğalgaz kesintisi, çöp, park, gürültü, vb.),  
-3. Sorunu kendi cümleleriyle anlatarak detaylı bilgi giriyor (ne oldu, ne zaman, nerede, ne istiyor).
+3. Sorunu kendi cümleleriyle anlatarak detaylı bilgi giriyor 
+   (başvurular veritabanına kaydedilir ve harita üzerinde görselleştirilir)
 ## AI'nın Rolü
 AI, bu metni anlayarak:
 - Soruna uygun **resmi şikayet kanallarını** gösteriyor (örneğin belediye çağrı merkezi, ALO 153, e‑devlet, belediye web sitesi, e‑posta, WhatsApp hattı, vb.).  
