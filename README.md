@@ -34,7 +34,9 @@ Türkiye'de milyonlarca vatandaş belediye sorunlarını (bozuk yol, su kesintis
 - **Veritabanı:** JSON tabanlı belediye veri seti
 - **Harita:** Leaflet.js + OpenStreetMap
 - **Deploy:** Vercel
-- 
+  Veritabanı: Supabase (PostgreSQL) — vatandaş başvurularını saklar, harita verisini sağlar
+  Statik Veri: JSON tabanlı belediye iletişim veri seti
+  
 ## 🤖 Geliştirme Sürecinde Kullanılan AI Araçları
 - **Antigravity** — Temel kod geliştirme
 - **Claude Code** — Terminal tabanlı AI kod asistanı
