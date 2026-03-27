@@ -9,7 +9,8 @@ Bu dosya `prd.md`’deki gereksinimlere göre, uygulamayı adım adım geliştir
 
 ## 1) Proje Kurulumu
 - [ ] **Klasör yapısı**: `app/` (frontend), `api/` (serverless), `data/` (belediye JSON), `docs/` (opsiyonel).
-- [ ] **Ortam değişkenleri**: `.env.example` oluştur (LLM API anahtarı vb.), gerçek anahtarları commit’leme.
+- [ ] * **Ortam değişkenleri**: `.env.example` oluştur 
+  (LLM API anahtarı, Supabase URL ve Anon Key)
 - [ ] **Temel README**: Proje amacı, kurulum, çalıştırma, deploy notları.
 
 ## 2) Veri: Belediye / İletişim Kanalı Datası
