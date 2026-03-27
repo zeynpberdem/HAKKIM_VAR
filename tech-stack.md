@@ -10,6 +10,10 @@
 - **Node.js** — Sunucu tarafı çalışma ortamı
 - **Netlify Functions** — Sunucusuz API fonksiyonları
 
+## Veritabanı
+- **Supabase (PostgreSQL)** — Vatandaş başvurularının saklanması ve harita verisinin sağlanması
+- **JSON (municipalities.json)** — Belediye iletişim bilgileri (telefon, WhatsApp, web sitesi)
+
 ## Yapay Zeka
 - **Google Gemini API** — Dilekçe üretimi ve metin dönüştürme
 - **Google AI Studio** — API anahtarı yönetimi
