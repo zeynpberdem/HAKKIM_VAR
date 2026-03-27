@@ -186,11 +186,11 @@
       "lat": 38.6668219,
       "lng": 39.1986456
     },
-    {
-  "name": "Cumhuriyet Mah.",
-  "district": "Merkez",
-  "lat": 38.6748, 
-  "lng": 39.1835
+{
+  "name": "Cumhuriyet",
+  "district": null,
+  "lat": 38.5720586, 
+  "lng": 38.8286769
 },
     {
       "name": "Olgunlar Mah.",
