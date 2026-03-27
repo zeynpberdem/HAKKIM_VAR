@@ -68,4 +68,5 @@ Sistem, kullanıcının girdilerini bir Prompt (istem) olarak paketleyip bir LLM
 
 ### MVP Kapsamı Dışındakiler:
 - Kullanıcı girişi / üye kaydı (şimdilik gerek yok).  
-- Dilekçeyi doğrudan belediyeye sistem üzerinden göndermek (yasal ve teknik zorluklar nedeniyle kullanıcı kendi göndermeli).  
+- Dilekçeyi doğrudan belediyeye sistem üzerinden göndermek (yasal ve teknik zorluklar nedeniyle kullanıcı kendi göndermeli).
+- Supabase Row Level Security — şu an tüm veriler herkese açık. 
