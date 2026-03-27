@@ -15,6 +15,7 @@ Resmi dilekçe dili ve yazışma kurallarını bilmedikleri için belediye veya 
 - Hızlı çözüm arayan yoğun çalışanlar ve öğrenciler  
 - Resmi yazışma ve dilekçe yazma konularına hakim olmayan her yaştan vatandaş  
 - Belediye hizmetlerinden doğrudan etkilenen ve sesini duyurmak isteyen bireyler.
+  
 ## 3. Kullanıcı ve Kullanım Senaryosu (Adım Adım)
 1. Kullanıcı web sayfasını açar ve sade bir “Hakkım Var” karşılama ekranı görür.  
 2. Kullanıcı, açılır listeden (Dropdown) İl ve ardından İlçe Belediyesini seçer.  
@@ -22,7 +23,8 @@ Resmi dilekçe dili ve yazışma kurallarını bilmedikleri için belediye veya 
 4. Kullanıcı, metin alanına kendi cümleleriyle sorununu yazıyor (örneğin: “Bizim sokağın lambası 1 haftadır yanmıyor, gece çocuklar korkuyor.”).  
 5. Kullanıcı, “AI Destekli Çözüm Üret” butonuna tıklar.  
 6. AI, saniyeler içinde o belediyeye özel iletişim kanallarını ve bir dilekçe metni hazırlar, sonuç alanına gösterir.  
-7. Kullanıcı, sonuçları inceleyip, belediye veya ilgili kuruma başvuru yaparken kullanır. 
+7. Kullanıcı, sonuçları inceleyip, belediye veya ilgili kuruma başvuru yaparken kullanır.
+    
 ## 4. Genel Özellikler (Kullanıcı Tarafı)
 - Sade Form Yapısı: Karmaşık kayıt formları yok; sadece şehir, belediye, sorun kategorisi ve metin alanı olan bir form.  
 - Dinamik Belediye Listesi: Seçilen ile göre ilçelerin otomatik olarak gelmesi ve doğru belediyeyi seçmesi.  
@@ -53,7 +55,9 @@ Sistem, kullanıcının girdilerini bir Prompt (istem) olarak paketleyip bir LLM
 
 ## 7. Teknik Notlar
 - API Güvenliği: API anahtarı (Key) kesinlikle HTML/Frontend tarafında açıkta bırakılmamalı. Basit bir “Serverless Function” (örneğin Vercel veya Netlify Functions) arkasına saklanmalı.  
-- Veri Seti: İlk aşamada Türkiye'deki tüm belediyelerin WhatsApp/E‑posta bilgileri bir JSON dosyasında tutulabilir.  
+* Veri Seti: Belediye iletişim bilgileri (WhatsApp/E-posta) JSON dosyasında tutulur. 
+  Vatandaş başvuruları Supabase (PostgreSQL) veritabanında saklanır ve 
+  şikayet haritasında görselleştirilir.  
 - Mobil Uyumluluk: Kullanıcıların %80'inin mobilden gireceği için Responsive tasarım zorunludur.  
 
 ## 8. Başarı Kriteri (MVP - Minimum Uygulanabilir Ürün)
