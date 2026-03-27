@@ -180,7 +180,8 @@ async function loadNeighLookup() {
     for (const [city, mahalles] of Object.entries(data)) {
       const cityKey = city.toLocaleLowerCase('tr-TR');
       for (const m of mahalles) {
-        const nameKey = m.name.toLocaleLowerCase('tr-TR');
+        const nameKey = m.name.toLocaleLowerCase('tr-TR')
+          .replace(/\s*(mahallesi|mahalle|mah\.|mah|mh\.)\s*/gi, '').trim();
         neighLookup[`${cityKey}|${nameKey}`] = [m.lat, m.lng];
       }
     }
