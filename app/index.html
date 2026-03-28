@@ -11,38 +11,38 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', system-ui, sans-serif; background: #060813; color: white; min-height: 100vh; }
 canvas#bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(79,70,229,0.12) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(79,70,229,0.08) 0%, transparent 45%); }
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 10% 60%, rgba(109,40,217,0.15) 0%, transparent 50%), radial-gradient(ellipse at 90% 10%, rgba(8,145,178,0.12) 0%, transparent 45%); }
 nav { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(6,8,19,0.92); backdrop-filter: blur(12px); flex-shrink: 0; }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-text { font-size: 22px; font-weight: 800; color: white; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
-.logo-text span { background: linear-gradient(90deg, #818cf8, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-text span { background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 @keyframes drawCheck { 0% { stroke-dashoffset: 12; opacity: 0.3; } 50% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 12; opacity: 0.3; } }
 .logo-check { stroke-dasharray: 12; animation: drawCheck 2s ease-in-out infinite; }
 .nav-links { display: flex; align-items: center; gap: 1.5rem; }
 .nav-link { color: rgba(255,255,255,0.55); font-size: 14px; cursor: pointer; }
-.nav-cta { background: #6d28d9; color: white; border: 1px solid rgba(255,255,255,0.12); padding: 0.55rem 1.3rem; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer; transition: all 0.2s; }
-.nav-cta:hover { background: #5b21b6; transform: translateY(-1px); }
+.nav-cta { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; padding: 0.55rem 1.3rem; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 0 20px rgba(124,58,237,0.3); transition: all 0.2s; }
+.nav-cta:hover { background: linear-gradient(135deg, #6d28d9, #4c1d95); transform: translateY(-1px); }
 .main { flex: 1; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2rem; padding: 2rem 2.5rem; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
-.badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,70,229,0.12); border: 1px solid rgba(79,70,229,0.3); color: #a5b4fc; padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 11px; font-weight: 500; margin-bottom: 1rem; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(109,40,217,0.18); border: 1px solid rgba(109,40,217,0.35); color: #c4b5fd; padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 11px; font-weight: 500; margin-bottom: 1rem; }
 .bdot { width: 5px; height: 5px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 h1 { font-size: 40px; font-weight: 700; line-height: 1.1; margin-bottom: 0.9rem; color: white; animation: fadeUp 0.6s 0.1s ease both; }
-h1 .grad { background: linear-gradient(90deg, #818cf8, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h1 .grad { background: linear-gradient(90deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .desc { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 1.3rem; max-width: 420px; }
 .cta-row { display: flex; gap: 10px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
-.btn-main { background: #6d28d9; color: white; border: 1px solid rgba(255,255,255,0.12); padding: 0.7rem 1.7rem; border-radius: 9px; font-size: 14px; font-weight: 700; letter-spacing: 0.4px; cursor: pointer; transition: all 0.2s; }
-.btn-main:hover { background: #5b21b6; transform: translateY(-2px); }
+.btn-main { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; padding: 0.7rem 1.7rem; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 22px rgba(124,58,237,0.35); letter-spacing: 0.4px; transition: all 0.2s; }
+.btn-main:hover { background: linear-gradient(135deg, #6d28d9, #4c1d95); transform: translateY(-2px); }
 .btn-note { font-size: 11px; color: rgba(255,255,255,0.35); }
 .stats { display: flex; gap: 2rem; margin-bottom: 1.4rem; }
 .snum { font-size: 22px; font-weight: 700; color: #ffffff; }
 .slbl { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
 .steps-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; }
-.step { background: rgba(79,70,229,0.04); border: 1px solid rgba(79,70,229,0.15); border-radius: 10px; padding: 1.5rem; }
-.step-n { width: 32px; height: 32px; border-radius: 50%; background: rgba(79,70,229,0.2); border: 1px solid rgba(79,70,229,0.35); color: #a5b4fc; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-bottom: 0.5rem; }
+.step { background: rgba(109,40,217,0.05); border: 1px solid rgba(109,40,217,0.18); border-radius: 10px; padding: 1.5rem; }
+.step-n { width: 32px; height: 32px; border-radius: 50%; background: rgba(109,40,217,0.25); border: 1px solid rgba(109,40,217,0.4); color: #a78bfa; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-bottom: 0.5rem; }
 .step h3 { font-size: 15px; font-weight: 600; margin-bottom: 0.2rem; }
 .step p { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.4; }
-.preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(79,70,229,0.2); border-radius: 14px; padding: 1.2rem; }
+.preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(109,40,217,0.2); border-radius: 14px; padding: 1.2rem; box-shadow: 0 0 40px rgba(109,40,217,0.1); }
 .prev-top { display: flex; align-items: center; gap: 5px; padding-bottom: 0.8rem; margin-bottom: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
 .dot { width: 8px; height: 8px; border-radius: 50%; }
 .ptxt { font-size: 11px; color: rgba(255,255,255,0.3); margin-left: 4px; }
@@ -51,14 +51,14 @@ h1 .grad { background: linear-gradient(90deg, #818cf8, #4f46e5); -webkit-backgro
 .ik { color: rgba(255,255,255,0.4); }
 .iv { color: white; font-weight: 600; }
 .chips { display: flex; gap: 5px; flex-wrap: wrap; margin: 0.7rem 0; }
-.chip { padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 11px; font-weight: 500; background: rgba(79,70,229,0.18); border: 1px solid rgba(79,70,229,0.3); color: #a5b4fc; }
-.dilekce { background: rgba(79,70,229,0.05); border: 1px solid rgba(79,70,229,0.12); border-radius: 7px; padding: 0.8rem 0.9rem; margin-top: 0.5rem; font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.65; font-style: italic; }
+.chip { padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 11px; font-weight: 500; background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.35); color: #c4b5fd; }
+.dilekce { background: rgba(109,40,217,0.06); border: 1px solid rgba(109,40,217,0.15); border-radius: 7px; padding: 0.8rem 0.9rem; margin-top: 0.5rem; font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.65; font-style: italic; }
 .copy-r { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
 .copy-r span { font-size: 10px; color: rgba(255,255,255,0.25); }
-.copy-r button { background: rgba(79,70,229,0.18); border: 1px solid rgba(79,70,229,0.3); color: #a5b4fc; padding: 0.28rem 0.8rem; border-radius: 6px; font-size: 11px; cursor: pointer; }
-.quick-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid rgba(79,70,229,0.1); }
-.qt { background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.15); color: #a5b4fc; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
-.qt:hover { background: rgba(79,70,229,0.22); }
+.copy-r button { background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.35); color: #a78bfa; padding: 0.28rem 0.8rem; border-radius: 6px; font-size: 11px; cursor: pointer; }
+.quick-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid rgba(109,40,217,0.12); }
+.qt { background: rgba(109,40,217,0.09); border: 1px solid rgba(109,40,217,0.18); color: #c4b5fd; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+.qt:hover { background: rgba(109,40,217,0.25); }
 
 @media (max-width: 768px) {
   nav { padding: 0.75rem 1.2rem; }
@@ -102,7 +102,7 @@ h1 .grad { background: linear-gradient(90deg, #818cf8, #4f46e5); -webkit-backgro
       <h1>Hakkını ara,<br><span class="grad">doğru yere ilet</span></h1>
       <p class="desc">Altyapı ve belediye hizmet sorunlarını doğru kuruma, doğru üslupla iletmen için AI destekli dilekçe oluşturma platformu.</p>
       <div class="cta-row">
-        <button class="btn-main" id="startApplication">Dilekçeni Oluştur →</button>
+        <button class="btn-main" id="startApplication">Başvuru Yap →</button>
         <span class="btn-note">Üyelik gerekmez. Dilekçeyi kopyalayıp ilgili kuruma iletin.</span>
       </div>
       <div class="stats">
