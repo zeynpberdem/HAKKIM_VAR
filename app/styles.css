@@ -21,12 +21,12 @@ nav {
 .nav-links { display: flex; align-items: center; gap: 1.5rem; }
 .nav-link { color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; text-decoration: none; }
 .nav-cta {
-  background: #0f766e;
+  background: #6d28d9;
   color: white; border: none; padding: 0.55rem 1.3rem;
   border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
   transition: background 0.2s;
 }
-.nav-cta:hover { background: #115e59; }
+.nav-cta:hover { background: #5b21b6; }
 
 .hero {
   max-width: 1100px; margin: 0 auto;
@@ -49,12 +49,12 @@ h1 em { font-style: normal; background: linear-gradient(90deg, #818cf8, #4f46e5)
 
 .cta-row { display: flex; gap: 12px; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; }
 .btn-main {
-  background: #0f766e;
+  background: #6d28d9;
   color: white; border: none; padding: 0.8rem 1.8rem;
   border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
   transition: background 0.2s;
 }
-.btn-main:hover { background: #115e59; }
+.btn-main:hover { background: #5b21b6; }
 .btn-ghost {
   background: transparent; color: rgba(255,255,255,0.7);
   border: 1px solid rgba(255,255,255,0.2); padding: 0.8rem 1.6rem;
@@ -235,11 +235,11 @@ select:focus, input:focus, textarea:focus{
 
 .actions{ display:flex; align-items:center; justify-content:space-between; margin-top: 1rem; flex-wrap: wrap; gap: 1rem; }
 .primary{
-  background: #0f766e; color: white;
+  background: #6d28d9; color: white;
   border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;
   transition: background 0.2s;
 }
-.primary:hover:not(:disabled) { background: #115e59; }
+.primary:hover:not(:disabled) { background: #5b21b6; }
 .primary:disabled{ opacity: .6; cursor:not-allowed; }
 .status{ font-size: 13px; color: rgba(255,255,255,0.6); }
 .status.error{ color: #ff6b6b; }
@@ -343,8 +343,8 @@ select:focus, input:focus, textarea:focus{
 .pdf-modal-textarea:focus { border-color: rgba(124,58,237,0.6); }
 .pdf-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 .cta-btn {
-  background: #0f766e; color: white; border: none; border-radius: 10px;
+  background: #6d28d9; color: white; border: none; border-radius: 10px;
   padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
   transition: background 0.2s;
 }
-.cta-btn:hover { background: #115e59; }
+.cta-btn:hover { background: #5b21b6; }
