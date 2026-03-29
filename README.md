@@ -4,7 +4,7 @@
 
 ## 🌍 Canlı Demo
 🔗 **Yayın Linki:** https://hakkim-var.vercel.app  
-🎥 **Demo Video:** [BURAYA LOOM LİNKİNİ YAZ]         
+🎥 **Demo Video:** [https://youtu.be/UDzDxO0oEaQ]         
       🔗 Test Sürecimiz: Kullanıcılara uyguladığımız anketin orijinal haline buradan https://forms.gle/YazgvT4PJFHpqiBV9 ulaşabilirsiniz.
 
 ## 💡 Problem
@@ -69,11 +69,4 @@ data/     → Belediye iletişim verisi (JSON)
 ## ⚙️ Lokal Çalıştırma
 ```bash
 # 1. Repoyu klonla
-git clone https://github.com/KULLANICI_ADIN/REPO_ADIN.git
-
-# 2. .env dosyasını oluştur
-cp .env.example .env
-# .env içine API anahtarını gir
-
-# 3. Netlify CLI ile çalıştır
-netlify dev
+(https://github.com/zeynpberdem/HAKKIM_VAR.git)
