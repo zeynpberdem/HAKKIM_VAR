@@ -3,8 +3,7 @@
 > Hakkını ara, doğru yere ilet.
 
 ## 🌍 Canlı Demo
-🔗 **Yayın Linki:** https://hakkim-var.vercel.app  
-🎥 **Demo Video:** [https://youtu.be/UDzDxO0oEaQ]         
+🔗 **Yayın Linki:** https://hakkim-var.vercel.app         
       🔗 Test Sürecimiz: Kullanıcılara uyguladığımız anketin orijinal haline buradan https://forms.gle/YazgvT4PJFHpqiBV9 ulaşabilirsiniz.
 
 ## 💡 Problem
